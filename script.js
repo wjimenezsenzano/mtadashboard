@@ -6,25 +6,10 @@ const svg = d3.select("#map")
   .attr("width", width)
   .attr("height", height);
 
-d3.csv("MTA_Subway_Stations.csv").then(function(data) {
-
-  console.log(data); // check if data loads
-  console.log("CSV loaded! Woo!");
-});
-
-const width = 900;
-const height = 600;
-
-// Create SVG inside the map div
-const svg = d3.select("#map")
-  .append("svg")
-  .attr("width", width)
-  .attr("height", height);
-
 // Load CSV
 d3.csv("MTA_Subway_Stations.csv").then(function(data) {
 
-  console.log("CSV loaded!");
+  console.log("CSV loaded! Woo!");
   console.log("First row:", data[0]);
 
   // Convert latitude/longitude to numbers
