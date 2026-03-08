@@ -1,12 +1,14 @@
+//initial settings
 const width = 900;
 const height = 600;
 
+//creating drawing canvas (svg) inside "map" element so D3 can draw on it
 const svg = d3.select("#map")
   .append("svg")
   .attr("width", width)
   .attr("height", height);
 
-// Load CSV
+// Load data
 d3.csv("MTA_Subway_Stations.csv").then(function(data) {
 
   console.log("CSV loaded! Woo!");
@@ -20,20 +22,29 @@ d3.csv("MTA_Subway_Stations.csv").then(function(data) {
 
   // Projection centered on NYC
   const projection = d3.geoMercator()
-    .center([-73.94, 40.70])   // NYC approx center
-    .scale(80000)              // zoom
+    .center([-73.94, 40.70])   // NYC approx center data points
+    .scale(80000)              // zoom in
     .translate([width / 2, height / 2]);
 
-  // Draw stations as blue circles
-  svg.selectAll("circle")
-    .data(data)
-    .enter()
-    .append("circle")
-    .attr("cx", d => projection([d.Longitude, d.Latitude])[0])
-    .attr("cy", d => projection([d.Longitude, d.Latitude])[1])
-    .attr("r", 3)
-    .attr("fill", "steelblue")
-    .attr("opacity", 0.6);
+//set up the borough colors
+    const boroughColor = {
+  "M": "#1f77b4",   // Manhattan
+  "B": "#ff7f0e",   // Bronx
+  "Q": "#2ca02c",   // Queens
+  "Bk": "#d62728",  // Brooklyn
+  "S": "#9467bd"    // Staten Island
+};
+
+//Color according to Boroughs
+svg.selectAll("circle")
+  .data(data)
+  .enter()
+  .append("circle")
+  .attr("cx", d => projection([d.Longitude, d.Latitude])[0])
+  .attr("cy", d => projection([d.Longitude, d.Latitude])[1])
+  .attr("r", 3)
+  .attr("fill", d => boroughColor[d.Borough])
+  .attr("opacity", 0.7);
 
   console.log("Stations plotted! Yeehaw!");
 });
