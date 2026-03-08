@@ -86,7 +86,6 @@ svg.selectAll("circle")
 const legend = svg.append("g")
   .attr("transform", "translate(20,20)");
   console.log("Stations plotted! Yeehaw!");
-});
 
 //draw the legend
 legend.selectAll("rect")
@@ -107,3 +106,5 @@ legend.selectAll("text")
   .attr("y", (d,i) => i * 20 + 10)
   .text(d => d.name)
   .attr("font-size", "12px");
+
+  });
