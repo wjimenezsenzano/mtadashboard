@@ -10,7 +10,6 @@ const svg = d3.select("#map")
 
 // Load data
 d3.csv("MTA_Subway_Stations.csv").then(function(data) {
-
   console.log("CSV loaded! Woo!");
   console.log("First row:", data[0]);
 
@@ -44,7 +43,7 @@ const boroughs = [
   {code:"B", name:"Bronx"},
   {code:"Q", name:"Queens"},
   {code:"Bk", name:"Brooklyn"},
-  {code:"S", name:"Staten Island"}
+  {code:"SI", name:"Staten Island"}
 ];
 
 //set up the borough colors
@@ -53,7 +52,7 @@ const boroughColor = {
   "B": "#377eb8",   // Bronx - blue
   "Q": "#4daf4a",   // Queens - green
   "Bk": "#984ea3",  // Brooklyn - purple
-  "S": "#ff7f00"    // Staten Island - orange
+  "SI": "#ff7f00"    // Staten Island - orange
 };
 
 //Color according to Boroughs
@@ -66,6 +65,10 @@ svg.selectAll("circle")
   .attr("r", 3)
   .attr("fill", d => boroughColor[d.Borough])
   .attr("opacity", 0.7)
+
+//ADA accessibility
+.attr("stroke", d => d.ADA > 0 ? "black" : "none")
+.attr("stroke-width", d => d.ADA > 0 ? 2 : 0)
 
     //mouseover
   .on("mouseover", (event, d) => {
