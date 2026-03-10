@@ -26,7 +26,9 @@ const structureSvg = d3.select("#structureChart")
 d3.csv("MTA_Subway_Stations.csv").then(function(data) {
   console.log("CSV loaded! Woo!");
   console.log("First row:", data[0]);
-
+// --------------------
+// MAP DATA
+// --------------------
   // Convert latitude/longitude to numbers
   data.forEach(d => {
     d.Latitude = +d["GTFS Latitude"];
@@ -44,10 +46,10 @@ const tooltip = d3.select("body")
   .style("font-size", "12px")
   .style("visibility", "hidden");
 
-  // Projection centered on NYC
+  // Define projection map centered on NYC
   const projection = d3.geoMercator()
     .center([-73.94, 40.70])   // NYC approx center data points
-    .scale(80000)              // zoom in
+    .scale(80000)              // zoom in level
     .translate([width / 2, height / 2]);
 
 
@@ -123,6 +125,27 @@ legend.selectAll("text")
   .attr("y", (d,i) => i * 20 + 10)
   .text(d => d.name)
   .attr("font-size", "12px");
+
+// --------------------
+// ADA BAR CHART DATA
+// --------------------
+// get ADA counts by borough
+const boroughSummary = d3.rollups(
+  data,
+  v => ({
+    ADA: v.filter(d => d.ADA === "1").length,
+    nonADA: v.filter(d => d.ADA === "0").length
+  }),
+  d => d.Borough
+).map(([borough, counts]) => ({
+  borough,
+  ADA: counts.ADA,
+  nonADA: counts.nonADA
+}));
+
+console.log("Borough ADA summary:", boroughSummary);
+
+
   });
 
   //draw the legend, ADA
