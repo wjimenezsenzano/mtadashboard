@@ -82,7 +82,7 @@ svg.selectAll("circle")
   .attr("fill", d => boroughColor[d.Borough])
   .attr("opacity", 0.7)
 
-//ADA accessibility
+//ADA accessibility outlines
 .attr("stroke", d => d.ADA > 0 ? "black" : "none")
 .attr("stroke-width", d => d.ADA > 0 ? 2 : 0)
 
@@ -142,10 +142,16 @@ const boroughSummary = d3.rollups(
   ADA: counts.ADA,
   nonADA: counts.nonADA
 }));
+const x = d3.scaleBand()//set x-scale for bar
+  .domain(boroughSummary.map(d => d.borough))
+  .range([50, 350])
+  .padding(0.2);
 
+const y = d3.scaleLinear()//set y-scale for bar
+  .domain([0, d3.max(boroughSummary, d => d.ADA + d.nonADA)])
+  .nice()
+  .range([250, 50]);
 console.log("Borough ADA summary:", boroughSummary);
-
-
   });
 
   //draw the legend, ADA
@@ -182,3 +188,35 @@ ada.selectAll("text")
   .attr("y", (d,i) => i * 20 + 19) //manually fix the legend
   .text(d => d.label)
   .attr("font-size", "12px");
+
+  // ADA bars (black)
+adaSvg.selectAll(".adaBar")
+  .data(boroughSummary)
+  .enter()
+  .append("rect")
+  .attr("class","adaBar")
+  .attr("x", d => x(d.borough))
+  .attr("y", d => y(d.ADA))
+  .attr("width", x.bandwidth()/2)
+  .attr("height", d => 250 - y(d.ADA))
+  .attr("fill","black");
+
+// Non-ADA bars (gray)
+adaSvg.selectAll(".nonAdaBar")
+  .data(boroughSummary)
+  .enter()
+  .append("rect")
+  .attr("class","nonAdaBar")
+  .attr("x", d => x(d.borough) + x.bandwidth()/2)
+  .attr("y", d => y(d.nonADA))
+  .attr("width", x.bandwidth()/2)
+  .attr("height", d => 250 - y(d.nonADA))
+  .attr("fill","lightgray");
+
+  adaSvg.append("g")
+  .attr("transform","translate(0,250)")
+  .call(d3.axisBottom(x));
+
+adaSvg.append("g")
+  .attr("transform","translate(50,0)")
+  .call(d3.axisLeft(y));
