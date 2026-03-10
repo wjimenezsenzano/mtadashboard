@@ -153,7 +153,26 @@ const y = d3.scaleLinear()//set y-scale for bar
   .range([250, 50]);
 console.log("Borough ADA summary:", boroughSummary);
   });
+// Non-ADA bars (gray)
+adaSvg.selectAll(".nonAdaBar")
+  .data(boroughSummary)
+  .enter()
+  .append("rect")
+  .attr("class","nonAdaBar")
+  .attr("x", d => x(d.borough) + x.bandwidth()/2)
+  .attr("y", d => y(d.nonADA))
+  .attr("width", x.bandwidth()/2)
+  .attr("height", d => 250 - y(d.nonADA))
+  .attr("fill","lightgray");
 
+  adaSvg.append("g")
+  .attr("transform","translate(0,250)")
+  .call(d3.axisBottom(x));
+
+adaSvg.append("g")
+  .attr("transform","translate(50,0)")
+  .call(d3.axisLeft(y));
+  
   //draw the legend, ADA
   // ADA legend
 const adaLegend = [
@@ -201,22 +220,3 @@ adaSvg.selectAll(".adaBar")
   .attr("height", d => 250 - y(d.ADA))
   .attr("fill","black");
 
-// Non-ADA bars (gray)
-adaSvg.selectAll(".nonAdaBar")
-  .data(boroughSummary)
-  .enter()
-  .append("rect")
-  .attr("class","nonAdaBar")
-  .attr("x", d => x(d.borough) + x.bandwidth()/2)
-  .attr("y", d => y(d.nonADA))
-  .attr("width", x.bandwidth()/2)
-  .attr("height", d => 250 - y(d.nonADA))
-  .attr("fill","lightgray");
-
-  adaSvg.append("g")
-  .attr("transform","translate(0,250)")
-  .call(d3.axisBottom(x));
-
-adaSvg.append("g")
-  .attr("transform","translate(50,0)")
-  .call(d3.axisLeft(y));
