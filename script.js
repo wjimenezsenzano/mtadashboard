@@ -40,7 +40,7 @@ const tooltip = d3.select("body")
 //set up the borough names
 const boroughs = [
   {code:"M", name:"Manhattan"},
-  {code:"B", name:"Bronx"},
+  {code:"Bx", name:"Bronx"},
   {code:"Q", name:"Queens"},
   {code:"Bk", name:"Brooklyn"},
   {code:"SI", name:"Staten Island"}
@@ -49,7 +49,7 @@ const boroughs = [
 //set up the borough colors
 const boroughColor = {
   "M": "#e41a1c",   // Manhattan - red
-  "B": "#377eb8",   // Bronx - blue
+  "Bx": "#377eb8",   // Bronx - blue
   "Q": "#4daf4a",   // Queens - green
   "Bk": "#984ea3",  // Brooklyn - purple
   "SI": "#ff7f00"    // Staten Island - orange
@@ -90,7 +90,7 @@ const legend = svg.append("g")
   .attr("transform", "translate(20,20)");
   console.log("Stations plotted! Yeehaw!");
 
-//draw the legend
+//draw the legend, boroughs
 legend.selectAll("rect")
   .data(boroughs)
   .enter()
@@ -109,5 +109,39 @@ legend.selectAll("text")
   .attr("y", (d,i) => i * 20 + 10)
   .text(d => d.name)
   .attr("font-size", "12px");
-
   });
+
+  //draw the legend, ADA
+  // ADA legend
+const adaLegend = [
+  {label: "ADA Accessible", stroke: "black"},
+  {label: "Not Accessible", stroke: "none"}
+];
+
+const ada = svg.append("g")
+  .attr("transform", "translate(20,140)");
+
+ada.append("text")
+  .text("Accessibility")
+  .attr("y", -5)
+  .attr("font-weight", "bold");
+
+ada.selectAll("circle")
+  .data(adaLegend)
+  .enter()
+  .append("circle")
+  .attr("cx", 6)
+  .attr("cy", (d,i) => i * 20)
+  .attr("r", 5)
+  .attr("fill", "gray")
+  .attr("stroke", d => d.stroke)
+  .attr("stroke-width", 2);
+
+ada.selectAll("text")
+  .data(adaLegend)
+  .enter()
+  .append("text")
+  .attr("x", 18)
+  .attr("y", (d,i) => i * 20 + 4)
+  .text(d => d.label)
+  .attr("font-size", "12px");
