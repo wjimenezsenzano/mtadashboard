@@ -14,13 +14,28 @@
       height: 600px;
       border: 1px solid #ccc;
     }
+    #charts{
+      display: flex;
+      gap: 40px;
+      margin-top: 40px;
+    }
+
+    #adaChart, #structureChart{
+      width: 450px;
+    }
+    
   </style>
 </head>
 <body>
 
-  <h1>Infrastructure & Accessibility in NYC Subway Stations</h1>
+  <h1>Infrastructure & Accessibility in NYC Subway Stations</h1> 
 
-  <div id="map"></div>
+  <div id="map"></div> 
+
+  <div id="charts">
+  <div id="adaChart"></div>
+  <div id="structureChart"></div>
+</div>
 
   <script src="script.js"></script>
 

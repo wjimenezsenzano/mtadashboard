@@ -1,12 +1,26 @@
-//initial settings
+//initial settings for map
 const width = 900;
 const height = 600;
+
+//initial settings for bar charts
+const barWidth = 400;
+const barHeight = 300;
 
 //creating drawing canvas (svg) inside "map" element so D3 can draw on it
 const svg = d3.select("#map")
   .append("svg")
   .attr("width", width)
   .attr("height", height);
+
+//creating drawing canvases for both chart elements so D3 can draw
+const adaSvg = d3.select("#adaChart")
+  .append("svg")
+  .attr("width", barWidth)
+  .attr("height", barHeight);
+const structureSvg = d3.select("#structureChart")
+  .append("svg")
+  .attr("width", barWidth)
+  .attr("height", barHeight);
 
 // Load data
 d3.csv("MTA_Subway_Stations.csv").then(function(data) {
@@ -131,7 +145,7 @@ ada.selectAll("circle")
   .enter()
   .append("circle")
   .attr("cx", 6)
-  .attr("cy", (d,i) => i * 20)
+  .attr("cy", (d,i) => i * 20+15) //manually fix the legend
   .attr("r", 5)
   .attr("fill", "gray")
   .attr("stroke", d => d.stroke)
@@ -142,6 +156,6 @@ ada.selectAll("text")
   .enter()
   .append("text")
   .attr("x", 18)
-  .attr("y", (d,i) => i * 20 + 4)
+  .attr("y", (d,i) => i * 20 + 19) //manually fix the legend
   .text(d => d.label)
   .attr("font-size", "12px");
