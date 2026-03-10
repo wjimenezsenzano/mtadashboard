@@ -152,7 +152,6 @@ const y = d3.scaleLinear()//set y-scale for bar
   .nice()
   .range([250, 50]);
 console.log("Borough ADA summary:", boroughSummary);
-  });
 // Non-ADA bars (gray)
 adaSvg.selectAll(".nonAdaBar")
   .data(boroughSummary)
@@ -172,7 +171,7 @@ adaSvg.selectAll(".nonAdaBar")
 adaSvg.append("g")
   .attr("transform","translate(50,0)")
   .call(d3.axisLeft(y));
-  
+});
   //draw the legend, ADA
   // ADA legend
 const adaLegend = [
