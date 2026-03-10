@@ -152,13 +152,26 @@ const y = d3.scaleLinear()//set y-scale for bar
   .nice()
   .range([250, 50]);
 console.log("Borough ADA summary:", boroughSummary);
+
+// ADA bars (black)
+adaSvg.selectAll(".adaBar")
+  .data(boroughSummary)
+  .enter()
+  .append("rect")
+  .attr("class","adaBar")
+  .attr("x", d => x(d.borough))           // left side
+  .attr("y", d => y(d.ADA))
+  .attr("width", x.bandwidth()/2)         // half-width
+  .attr("height", d => 250 - y(d.ADA))
+  .attr("fill","black");
+
 // Non-ADA bars (gray)
 adaSvg.selectAll(".nonAdaBar")
   .data(boroughSummary)
   .enter()
   .append("rect")
   .attr("class","nonAdaBar")
-  .attr("x", d => x(d.borough) + x.bandwidth()/2)
+  .attr("x", d => x(d.borough) + x.bandwidth()/2)   // shift right
   .attr("y", d => y(d.nonADA))
   .attr("width", x.bandwidth()/2)
   .attr("height", d => 250 - y(d.nonADA))
@@ -171,17 +184,52 @@ adaSvg.selectAll(".nonAdaBar")
 adaSvg.append("g")
   .attr("transform","translate(50,0)")
   .call(d3.axisLeft(y));
+
+  //ADA bar graph title
+  adaSvg.append("text")
+  .attr("x", barWidth/2)
+  .attr("y", 30)
+  .attr("text-anchor", "middle")
+  .attr("font-weight", "bold")
+  .text("ADA vs Non-ADA Stations by Borough");
+
+
 });
+
   //draw the legend, ADA
   // ADA legend
+
 const adaLegend = [
-  {label: "ADA Accessible", stroke: "black"},
-  {label: "Not Accessible", stroke: "none"}
+  {label: "ADA Accessible", color: "black"},
+  {label: "Not Accessible", color: "lightgray"}
 ];
+
+const legend = adaSvg.append("g")
+  .attr("transform", "translate(300,50)");
+
+legend.selectAll("rect")
+  .data(adaLegend)
+  .enter()
+  .append("rect")
+  .attr("x", 0)
+  .attr("y", (d,i) => i*20)
+  .attr("width", 12)
+  .attr("height", 12)
+  .attr("fill", d => d.color);
+
+legend.selectAll("text")
+  .data(adaLegend)
+  .enter()
+  .append("text")
+  .attr("x", 18)
+  .attr("y", (d,i) => i*20 + 10)
+  .text(d => d.label)
+  .attr("font-size", "12px");
 
 const ada = svg.append("g")
   .attr("transform", "translate(20,140)");
 
+  
 ada.append("text")
   .text("Accessibility")
   .attr("y", -5)
