@@ -127,6 +127,64 @@ legend.selectAll("text")
   .attr("font-size", "12px");
 
 // --------------------
+// STRUCTURE TYPE DATA
+// --------------------
+const structureSummary = d3.rollups(
+  data,
+  v => v.length,      // count of stations
+  d => d.Structure    // group by Structure type
+).map(([structure, count]) => ({
+  structure,
+  count
+}));
+
+console.log("Structure summary:", structureSummary);
+
+const structureSvg = d3.select("#structureChart")
+  .append("svg")
+  .attr("width", barWidth)
+  .attr("height", barHeight);
+
+const xStruct = d3.scaleBand()
+  .domain(structureSummary.map(d => d.structure))
+  .range([50, 350])
+  .padding(0.2);
+
+const yStruct = d3.scaleLinear()
+  .domain([0, d3.max(structureSummary, d => d.count)])
+  .nice()
+  .range([250, 50]);
+
+  //draw bars
+  structureSvg.selectAll(".structBar")
+  .data(structureSummary)
+  .enter()
+  .append("rect")
+  .attr("class", "structBar")
+  .attr("x", d => xStruct(d.structure))
+  .attr("y", d => yStruct(d.count))
+  .attr("width", xStruct.bandwidth())
+  .attr("height", d => 250 - yStruct(d.count))
+  .attr("fill", "#1f78b4");  // blue
+
+  //axes 
+structureSvg.append("g")
+  .attr("transform", "translate(0,250)")
+  .call(d3.axisBottom(xStruct));
+
+structureSvg.append("g")
+  .attr("transform", "translate(50,0)")
+  .call(d3.axisLeft(yStruct));
+  
+  //title
+  structureSvg.append("text")
+  .attr("x", barWidth / 2)
+  .attr("y", 30)
+  .attr("text-anchor", "middle")
+  .attr("font-weight", "bold")
+  .text("Subway Stations by Structure Type");
+
+// --------------------
 // ADA BAR CHART DATA
 // --------------------
 // get ADA counts by borough
@@ -153,7 +211,7 @@ const y = d3.scaleLinear()//set y-scale for bar
   .range([250, 50]);
 console.log("Borough ADA summary:", boroughSummary);
 
-// ADA bars (black)
+// ADA bars in black
 adaSvg.selectAll(".adaBar")
   .data(boroughSummary)
   .enter()
@@ -165,7 +223,7 @@ adaSvg.selectAll(".adaBar")
   .attr("height", d => 250 - y(d.ADA))
   .attr("fill","black");
 
-// Non-ADA bars (gray)
+// Non-ADA bars in gray
 adaSvg.selectAll(".nonAdaBar")
   .data(boroughSummary)
   .enter()
@@ -197,16 +255,12 @@ adaSvg.append("g")
 });
 
   //draw the legend, ADA
-  // ADA legend
-
 const adaLegend = [
   {label: "ADA Accessible", color: "black"},
   {label: "Not Accessible", color: "lightgray"}
 ];
-
 const legend = adaSvg.append("g")
   .attr("transform", "translate(300,50)");
-
 legend.selectAll("rect")
   .data(adaLegend)
   .enter()
@@ -216,7 +270,6 @@ legend.selectAll("rect")
   .attr("width", 12)
   .attr("height", 12)
   .attr("fill", d => d.color);
-
 legend.selectAll("text")
   .data(adaLegend)
   .enter()
@@ -225,16 +278,12 @@ legend.selectAll("text")
   .attr("y", (d,i) => i*20 + 10)
   .text(d => d.label)
   .attr("font-size", "12px");
-
 const ada = svg.append("g")
   .attr("transform", "translate(20,140)");
-
-  
 ada.append("text")
   .text("Accessibility")
   .attr("y", -5)
   .attr("font-weight", "bold");
-
 ada.selectAll("circle")
   .data(adaLegend)
   .enter()
