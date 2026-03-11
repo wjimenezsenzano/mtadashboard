@@ -86,21 +86,34 @@ svg.selectAll("circle")
 .attr("stroke", d => d.ADA > 0 ? "black" : "none")
 .attr("stroke-width", d => d.ADA > 0 ? 2 : 0)
 
-    //mouseover
-  .on("mouseover", (event, d) => {
-    tooltip
-      .style("visibility", "visible")
-      .text(d["Stop Name"]);
-  })
-  .on("mousemove", (event) => {
-    tooltip
-      .style("top", (event.pageY + 10) + "px")
-      .style("left", (event.pageX + 10) + "px");
-  })
-  .on("mouseout", () => {
-    tooltip.style("visibility", "hidden");
-  })
+//mouseover events
+.on("mouseover", (event, d) => {
+  tooltip
+    .style("visibility", "visible")
+    .text(d["Stop Name"]);
+})
+.on("mousemove", (event) => {
+  tooltip
+    .style("top", (event.pageY + 10) + "px")
+    .style("left", (event.pageX + 10) + "px");
+})
+.on("mouseout", () => {
+  tooltip.style("visibility", "hidden");
+})
 
+//click event for station info panel
+.on("click", (event, d) => {
+
+  d3.select("#stationInfo")
+    .style("display", "block")
+    .html(`
+      <h3>${d["Stop Name"]}</h3>
+      <p><b>Borough:</b> ${d.Borough}</p>
+      <p><b>Routes:</b> ${d["Daytime Routes"]}</p>
+      <p><b>Structure:</b> ${d.Structure}</p>
+      <p><b>ADA Accessible:</b> ${d.ADA === "1" ? "Yes" : "No"}</p>
+    `);
+});
 //legend for map
 const legend = svg.append("g")
   .attr("transform", "translate(20,20)");
