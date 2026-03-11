@@ -28,25 +28,28 @@
 </head>
 <body>
 
-  <h1>Infrastructure & Accessibility in NYC Subway Stations</h1> 
+<h1>Infrastructure & Accessibility in NYC Subway Stations</h1> 
 
-  <div id="map"></div> 
+<div style="display:flex; gap:30px;">
 
-  <div id="charts">
+  <div id="map"></div>
+
+  <div id="stationInfo" style="
+      width:250px;
+      padding:10px;
+      border:1px solid gray;
+      font-family:sans-serif;
+      display:none;">
+  </div>
+
+</div>
+
+<div id="charts">
   <div id="adaChart"></div>
   <div id="structureChart"></div>
-
-  //for the mouseover click
-<div id="stationInfo" style="display:none;"></div>
-  width:250px;
-  padding:10px;
-  border:1px solid gray;
-  font-family:sans-serif;
-  display:none;
-</div>
 </div>
 
-  <script src="script.js"></script>
+<script src="script.js"></script>
 
 </body>
 </html>
