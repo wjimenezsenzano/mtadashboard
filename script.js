@@ -1,10 +1,11 @@
-//initial settings for map
+// map size
 const width = 900;
 const height = 600;
 
-//initial settings for bar charts
-const barWidth = 400;
-const barHeight = 300;
+// charts size
+const margin = { top: 20, right: 20, bottom: 40, left: 40 };
+const barWidth = 350 - margin.left - margin.right;
+const barHeight = 250 - margin.top - margin.bottom;
 
 //creating drawing canvas (svg) inside "map" element so D3 can draw on it
 const svg = d3.select("#map")
@@ -15,12 +16,16 @@ const svg = d3.select("#map")
 //creating drawing canvases for both chart elements so D3 can draw
 const adaSvg = d3.select("#adaChart")
   .append("svg")
-  .attr("width", barWidth)
-  .attr("height", barHeight);
+  .attr("width", barWidth + margin.left + margin.right)
+  .attr("height", barHeight + margin.top + margin.bottom)
+  .append("g")
+  .attr("transform", `translate(${margin.left},${margin.top})`);
 const structureSvg = d3.select("#structureChart")
   .append("svg")
-  .attr("width", barWidth)
-  .attr("height", barHeight);
+  .attr("width", barWidth + margin.left + margin.right)
+  .attr("height", barHeight + margin.top + margin.bottom)
+  .append("g")
+  .attr("transform", `translate(${margin.left},${margin.top})`);
 
 // Load data
 d3.csv("MTA_Subway_Stations.csv").then(function(data) {
@@ -303,7 +308,7 @@ ada.selectAll("circle")
   .attr("cx", 6)
   .attr("cy", (d,i) => i * 20 + 15)
   .attr("r", 5)
-  .attr("fill", d => d.type === "ada" ? "white" : "gray")
+  .attr("fill", "gray")
   .attr("stroke", d => d.type === "ada" ? "black" : "none")
   .attr("stroke-width", d => d.type === "ada" ? 2 : 0);
 

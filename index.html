@@ -4,9 +4,21 @@
   <meta charset="utf-8">
   <title>NYC Subway Dashboard</title>
   <script src="https://d3js.org/d3.v7.min.js"></script>
+
   <style>
     body {
       font-family: sans-serif;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+    }
+
+    /* Top row: map + info panel */
+    #topRow {
+      display: flex;
+      gap: 30px;
+      align-items: flex-start;
     }
 
     #map {
@@ -14,41 +26,42 @@
       height: 600px;
       border: 1px solid #ccc;
     }
-    #charts{
-      display:flex;
-      gap:40px;
-      margin-top:20px;
-      flex-wrap:nowrap;
-      align-items:flex-start;
+
+    #stationInfo {
+      width: 250px;
+      padding: 10px;
+      border: 1px solid gray;
+      display: none;
     }
 
-    #adaChart, #structureChart{
-      width: 400px;
+    /* Bottom row: charts */
+    #charts {
+      display: flex;
+      gap: 40px;
+      margin-top: 30px;
+      justify-content: flex-start;
     }
-    
+
+    #adaChart, #structureChart {
+      width: 380px;
+    }
   </style>
 </head>
+
 <body>
 
-<h1>Infrastructure & Accessibility in NYC Subway Stations</h1> 
+<h1>Infrastructure & Accessibility in NYC Subway Stations</h1>
 
-<div style="display:flex; gap:30px;">
-
+<!-- TOP: Map + Info -->
+<div id="topRow">
   <div id="map"></div>
-
-  <div id="stationInfo" style="
-      width:250px;
-      padding:10px;
-      border:1px solid gray;
-      font-family:sans-serif;
-      display:none;">
-  </div>
-
+  <div id="stationInfo"></div>
 </div>
 
-<div id="charts" style="display:flex; gap:40px; margin-top:20px;">
-  <div id="adaChart" style="width:400px;"></div>
-  <div id="structureChart" style="width:400px;"></div>
+<!-- BOTTOM: Charts -->
+<div id="charts">
+  <div id="adaChart"></div>
+  <div id="structureChart"></div>
 </div>
 
 <script src="script.js"></script>
