@@ -267,8 +267,8 @@ adaSvg.append("g")
 
   //draw the legend, ADA
 const adaLegend = [
-  {label: "ADA Accessible", color: "black"},
-  {label: "Not Accessible", color: "lightgray"}
+  { label: "ADA Accessible", type: "ada" },
+  { label: "Not Accessible", type: "nonada" }
 ];
 const legend = adaSvg.append("g")
   .attr("transform", "translate(300,50)");
@@ -301,12 +301,11 @@ ada.selectAll("circle")
   .enter()
   .append("circle")
   .attr("cx", 6)
-  .attr("cy", (d,i) => i * 20+15) //manual adjustment to legend
+  .attr("cy", (d,i) => i * 20 + 15)
   .attr("r", 5)
-  .attr("fill", d => d.stroke === "black" ? "white" : "gray")
   .attr("fill", d => d.type === "ada" ? "white" : "gray")
   .attr("stroke", d => d.type === "ada" ? "black" : "none")
-  .attr("stroke-width", d => d.type === "ada" ? 2 : 0)
+  .attr("stroke-width", d => d.type === "ada" ? 2 : 0);
 
 ada.selectAll(".adaLabel")
   .data(adaLegend)
