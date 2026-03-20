@@ -263,8 +263,6 @@ adaSvg.append("g")
   .attr("text-anchor", "middle")
   .attr("font-weight", "bold")
   .text("ADA vs Non-ADA Stations by Borough");
-
-
 });
 
   //draw the legend, ADA
@@ -297,23 +295,26 @@ ada.append("text")
   .text("Accessibility")
   .attr("y", -5)
   .attr("font-weight", "bold");
+
 ada.selectAll("circle")
   .data(adaLegend)
   .enter()
   .append("circle")
   .attr("cx", 6)
-  .attr("cy", (d,i) => i * 20+15) //manually fix the legend
+  .attr("cy", (d,i) => i * 20+15) //manual adjustment to legend
   .attr("r", 5)
-  .attr("fill", "gray")
-  .attr("stroke", d => d.stroke)
+  .attr("fill", d => d.stroke === "black" ? "white" : "gray")
+  .attr("stroke", "black")
+  .attr("stroke-width", d => d.stroke === "black" ? 2 : 0)
   .attr("stroke-width", 2);
 
-ada.selectAll("text")
+ada.selectAll(".adaLabel")
   .data(adaLegend)
   .enter()
   .append("text")
+  .attr("class", "adaLabel")
   .attr("x", 18)
-  .attr("y", (d,i) => i * 20 + 19) //manually fix the legend
+  .attr("y", (d,i) => i * 20 + 19)//manual adjustment
   .text(d => d.label)
   .attr("font-size", "12px");
 
