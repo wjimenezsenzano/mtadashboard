@@ -304,9 +304,9 @@ ada.selectAll("circle")
   .attr("cy", (d,i) => i * 20+15) //manual adjustment to legend
   .attr("r", 5)
   .attr("fill", d => d.stroke === "black" ? "white" : "gray")
-  .attr("stroke", "black")
-  .attr("stroke-width", d => d.stroke === "black" ? 2 : 0)
-  .attr("stroke-width", 2);
+  .attr("fill", d => d.type === "ada" ? "white" : "gray")
+  .attr("stroke", d => d.type === "ada" ? "black" : "none")
+  .attr("stroke-width", d => d.type === "ada" ? 2 : 0)
 
 ada.selectAll(".adaLabel")
   .data(adaLegend)
