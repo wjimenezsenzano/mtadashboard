@@ -4,6 +4,11 @@ const height = 600;
 
 // charts size
 const margin = { top: 20, right: 20, bottom: 40, left: 40 };
+
+// get actual container width
+const containerWidth = document.getElementById("adaChart").clientWidth;
+const barWidth = containerWidth - margin.left - margin.right;
+const barHeight = 250 - margin.top - margin.bottom;
 const barWidth = 350 - margin.left - margin.right;
 const barHeight = 250 - margin.top - margin.bottom;
 
