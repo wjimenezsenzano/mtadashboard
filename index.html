@@ -40,12 +40,11 @@
     gap: 40px;
     margin-top: 30px;
     flex-wrap: nowrap;
-    justify-content: flex-start;
+    justify-content: space-between;
   }
 
     #adaChart, #structureChart {
   width: 450px;
-  flex: 0 0 auto; 
   }
   
   </style>
@@ -55,18 +54,16 @@
 
 <h1>Infrastructure & Accessibility in NYC Subway Stations</h1>
 
-<!-- Top map and info panel -->
+<!-- TOP: Map + Info -->
 <div id="topRow">
   <div id="map"></div>
   <div id="stationInfo"></div>
 </div>
 
-<!-- Bottom charts in a container -->
-<div style="width:900px;">
-  <div id="charts">
-    <div id="adaChart"></div>
-    <div id="structureChart"></div>
-  </div>
+<!-- BOTTOM: Charts -->
+<div id="charts">
+  <div id="adaChart"></div>
+  <div id="structureChart"></div>
 </div>
 
 <script src="script.js"></script>
