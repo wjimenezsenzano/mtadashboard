@@ -109,8 +109,11 @@ svg.selectAll("circle")
   tooltip.style("visibility", "hidden");
 })
 
-//click event for station info panel
+// click event for station info panel
 .on("click", (event, d) => {
+
+  //Prevent background reset click from firing
+  event.stopPropagation();
 
   // 1. Info panel on click
   d3.select("#stationInfo")
@@ -123,9 +126,9 @@ svg.selectAll("circle")
       <p><b>ADA Accessible:</b> ${d.ADA === "1" ? "Yes" : "No"}</p>
     `);
 
-  // 2. Fade all other stations, highlight selected one 
+  // 2. Highlight selected station + fade others (with animation)
   svg.selectAll("circle")
-    .transition()  //animation
+    .transition()
     .duration(400)
     .attr("opacity", station =>
       station["Stop Name"] === d["Stop Name"] ? 1 : 0.15
@@ -133,8 +136,18 @@ svg.selectAll("circle")
     .attr("r", station =>
       station["Stop Name"] === d["Stop Name"] ? 6 : 3
     );
-});
 
+});
+//click reset
+svg.on("click", () => {
+  svg.selectAll("circle")
+    .transition()
+    .duration(400)
+    .attr("opacity", 0.7)
+    .attr("r", 3);
+
+  d3.select("#stationInfo").style("display", "none");
+});
 
 //legend for map
 const legend = svg.append("g")
