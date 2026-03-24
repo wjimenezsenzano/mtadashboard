@@ -112,6 +112,7 @@ svg.selectAll("circle")
 //click event for station info panel
 .on("click", (event, d) => {
 
+  // 1. Info panel on click
   d3.select("#stationInfo")
     .style("display", "block")
     .html(`
@@ -121,7 +122,20 @@ svg.selectAll("circle")
       <p><b>Structure:</b> ${d.Structure}</p>
       <p><b>ADA Accessible:</b> ${d.ADA === "1" ? "Yes" : "No"}</p>
     `);
+
+  // 2. Fade all other stations, highlight selected one 
+  svg.selectAll("circle")
+    .transition()  //animation
+    .duration(400)
+    .attr("opacity", station =>
+      station["Stop Name"] === d["Stop Name"] ? 1 : 0.15
+    )
+    .attr("r", station =>
+      station["Stop Name"] === d["Stop Name"] ? 6 : 3
+    );
 });
+
+
 //legend for map
 const legend = svg.append("g")
   .attr("transform", "translate(20,20)");
@@ -187,6 +201,7 @@ const yStruct = d3.scaleLinear()
   .attr("width", xStruct.bandwidth())
   .attr("height", d => 250 - yStruct(d.count))
   .attr("fill", "#1f78b4");  // blue
+  structureSummary.sort((a, b) => b.count - a.count);// highest -> lowest
 
   //axes 
 structureSvg.append("g")
