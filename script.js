@@ -7,8 +7,8 @@ const margin = { top: 20, right: 20, bottom: 40, left: 40 };
 
 // get actual container width
 const containerWidth = document.getElementById("adaChart").clientWidth;
-const barWidth = 300;
-const barHeight = 250;
+const barWidth = 400;
+const barHeight = 300;
 
 //creating drawing canvas (svg) inside "map" element so D3 can draw on it
 const svg = d3.select("#map")
