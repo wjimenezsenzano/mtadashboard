@@ -138,7 +138,7 @@ svg.selectAll("circle")
     );
 
 });
-//click reset
+//reset faded stations on blank clicks
 svg.on("click", () => {
   svg.selectAll("circle")
     .transition()
@@ -177,14 +177,18 @@ legend.selectAll("text")
 // --------------------
 // STRUCTURE TYPE DATA
 // --------------------
+
 const structureSummary = d3.rollups(
-  data,
-  v => v.length,      // count of stations
-  d => d.Structure    // group by Structure type
-).map(([structure, count]) => ({
+  filteredData,         // filtered dataset instead of full data
+  v => v.length,        // count of stations
+  d => d.Structure      // grouping by Structure type
+)
+.map(([structure, count]) => ({
   structure,
   count
-}));
+}))
+// Sort descending by count: largest bar first
+.sort((a, b) => b.count - a.count);
 
 console.log("Structure summary:", structureSummary);
 
