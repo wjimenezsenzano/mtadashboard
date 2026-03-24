@@ -178,17 +178,60 @@ legend.selectAll("text")
 // STRUCTURE TYPE DATA
 // --------------------
 
-const structureSummary = d3.rollups(
-  filteredData,         // filtered dataset instead of full data
-  v => v.length,        // count of stations
-  d => d.Structure      // grouping by Structure type
-)
-.map(([structure, count]) => ({
-  structure,
-  count
-}))
-// Sort descending by count: largest bar first
-.sort((a, b) => b.count - a.count);
+function drawStructureChart(filteredData) {
+
+  // 1️⃣ Remove any previous SVG in this div
+  d3.select("#structureChart").selectAll("*").remove();
+
+  // 2️⃣ Compute summary counts and sort descending
+  const structureSummary = d3.rollups(
+    filteredData,
+    v => v.length,
+    d => d.Structure
+  )
+  .map(([structure, count]) => ({ structure, count }))
+  .sort((a, b) => b.count - a.count);
+
+  // 3️⃣ Create SVG
+  const svg2 = d3.select("#structureChart")
+    .append("svg")
+    .attr("width", barWidth)
+    .attr("height", barHeight);
+
+  // 4️⃣ Scales
+  const x = d3.scaleBand()
+    .domain(structureSummary.map(d => d.structure))
+    .range([0, barWidth])
+    .padding(0.2);
+
+  const y = d3.scaleLinear()
+    .domain([0, d3.max(structureSummary, d => d.count)])
+    .range([barHeight - 30, 0]);  // leave space for x-axis labels
+
+  // 5️⃣ Draw bars
+  svg2.selectAll("rect")
+    .data(structureSummary)
+    .enter()
+    .append("rect")
+    .attr("x", d => x(d.structure))
+    .attr("y", d => y(d.count))
+    .attr("width", x.bandwidth())
+    .attr("height", d => barHeight - 30 - y(d.count))
+    .attr("fill", "#69b3a2");
+
+  // 6️⃣ X-axis
+  svg2.append("g")
+    .attr("transform", `translate(0, ${barHeight - 30})`)
+    .call(d3.axisBottom(x))
+    .selectAll("text")
+    .attr("transform", "rotate(-30)")
+    .style("text-anchor", "end");
+
+  // 7️⃣ Y-axis
+  svg2.append("g")
+    .attr("transform", `translate(0,0)`)
+    .call(d3.axisLeft(y));
+}
 
 console.log("Structure summary:", structureSummary);
 
