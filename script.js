@@ -186,16 +186,13 @@ function drawStructureChart(filteredData) {
   d3.select("#structureChart").selectAll("*").remove();
   console.log("Structure field:", filteredData[0]["Structure"]);//testing for an undefined field
   // 2️⃣ Compute summary counts and sort descending
-const structureSummary = d3.rollups(
+const rolled = d3.rollups(
   filteredData,
   v => v.length,
-  d => d["Structure"] || "Unknown"
-).map(([structure, count]) => ({
-  structure,
-  count
-}));
-  
-  
+  d => d["Structure"]
+);
+
+const structureSummary = rolled
   .map(([structure, count]) => ({ structure, count }))
   .sort((a, b) => b.count - a.count);
 
