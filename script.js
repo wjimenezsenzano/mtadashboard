@@ -210,7 +210,17 @@ const structureSummary = rolled
   .attr("width", barWidth + margin.left + margin.right)
   .attr("height", barHeight + margin.top + margin.bottom)
   .append("g")
-  .attr("transform", `translate(${margin.left},${margin.top})`);
+  .attr("transform", `translate(${margin.left},${margin.top})`)
+  .on("click", function(event, d) {
+    const filteredData = window.fullData.filter(row =>
+      row.Structure === d.structure
+    );
+
+    drawAdaChart(filteredData);
+    drawStructureChart(filteredData);
+
+    updateMap(filteredData);
+  });
 
   // 4️⃣ Scales
   const x = d3.scaleBand()
@@ -304,8 +314,17 @@ function drawAdaChart(filteredData) {
   .attr("width", barWidth + margin.left + margin.right)
   .attr("height", barHeight + margin.top + margin.bottom)
   .append("g")
-  .attr("transform", `translate(${margin.left},${margin.top})`);
+  .attr("transform", `translate(${margin.left},${margin.top})`)
+  .on("click", function(event, d) {
+    const filteredData = window.fullData.filter(row =>
+      row.Structure === d.structure
+    );
 
+    drawAdaChart(filteredData);
+    drawStructureChart(filteredData);
+
+    updateMap(filteredData);
+  });
   // --------------------
   // DATA
   // --------------------
@@ -412,5 +431,21 @@ function drawAdaChart(filteredData) {
     .attr("y", (d,i) => i * 20 + 10)
     .text(d => d.label)
     .attr("font-size", "12px");
+
+  drawAdaChart(filteredData);
+  drawStructureChart(filteredData);
+
+  // also update map
+  updateMap(filteredData);
 }
 
+function updateMap(filteredData) {
+  svg.selectAll("circle")
+    .data(filteredData, d => d.Station_ID)
+    .join("circle")
+    .attr("cx", d => projection([d.Longitude, d.Latitude])[0])
+    .attr("cy", d => projection([d.Longitude, d.Latitude])[1])
+    .attr("r", 3)
+    .attr("fill", d => boroughColor[d.Borough])
+    .attr("opacity", 0.7);
+}
