@@ -184,14 +184,18 @@ function drawStructureChart(filteredData) {
 
   // 1️⃣ Remove any previous SVG in this div
   d3.select("#structureChart").selectAll("*").remove();
-
+  console.log("Structure field:", filteredData[0]["Structure"]);//testing for an undefined field
   // 2️⃣ Compute summary counts and sort descending
-  const structureSummary = d3.rollups(
-  filteredData,   //  data
+const structureSummary = d3.rollups(
+  filteredData,
   v => v.length,
-  d => d.Structure
-)
+  d => d["Structure"] || "Unknown"
+).map(([structure, count]) => ({
+  structure,
+  count
+}));
   )
+  
   .map(([structure, count]) => ({ structure, count }))
   .sort((a, b) => b.count - a.count);
 
