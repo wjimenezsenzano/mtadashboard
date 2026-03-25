@@ -170,7 +170,15 @@ svg.on("click", () => {
     .duration(400)
     .attr("opacity", 0.7)
     .attr("r", 3);
+  // reset Structure bars
+  d3.select("#structureChart").selectAll("rect")
+    .attr("stroke", "none")
+    .attr("stroke-width", 0);
 
+  // reset ADA bars
+  d3.select("#adaChart").selectAll(".adaBar, .nonAdaBar")
+    .attr("stroke", "none")
+    .attr("stroke-width", 0);
   d3.select("#stationInfo").style("display", "none");
 });
 
@@ -302,9 +310,9 @@ function drawAdaChart(filteredData) {
   // SCALES
   // --------------------
   const x = d3.scaleBand()
-    .domain(boroughSummary.map(d => d.borough))
-    .range([0, barWidth])
-    .padding(0.2);
+  .domain(boroughSummary.map(d => d.borough))
+  .range([50, barWidth - 50])
+  .padding(0.2);
 
   const y = d3.scaleLinear()
     .domain([0, d3.max(boroughSummary, d => d.ADA + d.nonADA)])
@@ -343,8 +351,12 @@ function drawAdaChart(filteredData) {
   // AXES
   // --------------------
   svg.append("g")
-    .attr("transform", `translate(0,${barHeight})`)
-    .call(d3.axisBottom(x));
+    .attr("transform", `translate(0, ${barHeight})`)
+    .call(d3.axisBottom(x)
+            .tickFormat(d => boroughFullName[d] || d)) // map short code to full name
+    .selectAll("text")
+    .attr("transform", "rotate(-30)")
+    .style("text-anchor", "end");
 
   svg.append("g")
     .call(d3.axisLeft(y));
