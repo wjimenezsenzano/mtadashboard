@@ -16,26 +16,32 @@ const svg = d3.select("#map")
   .attr("width", width)
   .attr("height", height);
 
-//creating drawing canvases for both chart elements so D3 can draw
-const adaSvg = d3.select("#adaChart")
-  .append("svg")
-  .attr("width", barWidth + margin.left + margin.right)
-  .attr("height", barHeight + margin.top + margin.bottom)
-  .append("g")
-  .attr("transform", `translate(${margin.left},${margin.top})`);
-const structureSvg = d3.select("#structureChart")
-  .append("svg")
-  .attr("width", barWidth + margin.left + margin.right)
-  .attr("height", barHeight + margin.top + margin.bottom)
-  .append("g")
-  .attr("transform", `translate(${margin.left},${margin.top})`);
+// //creating drawing canvases for both chart elements so D3 can draw
+// const adaSvg = d3.select("#adaChart")
+//   .append("svg")
+//   .attr("width", barWidth + margin.left + margin.right)
+//   .attr("height", barHeight + margin.top + margin.bottom)
+//   .append("g")
+//   .attr("transform", `translate(${margin.left},${margin.top})`);
+// const structureSvg = d3.select("#structureChart")
+//   .append("svg")
+//   .attr("width", barWidth + margin.left + margin.right)
+//   .attr("height", barHeight + margin.top + margin.bottom)
+//   .append("g")
+//   .attr("transform", `translate(${margin.left},${margin.top})`);
 
 // Load data
 d3.csv("MTA_Subway_Stations.csv").then(function(data) {
   console.log("CSV loaded! Woo!");
   console.log("First row:", data[0]);
 
- drawStructureChart(data); 
+  // initial full dataset render
+  drawAdaChart(data); 
+  drawStructureChart(data);
+
+  // store globally for filtering and interactions later
+  window.fullData = data;      // 
+});
 // --------------------
 // MAP DATA
 // --------------------
@@ -177,11 +183,11 @@ legend.selectAll("text")
   .attr("font-size", "12px");
 
 // --------------------
-// STRUCTURE TYPE DATA
+// FUNCTIONS FOR  BAR CHARTS
 // --------------------
 
 function drawStructureChart(filteredData) {
-
+  d3.select("#structureChart").html("");
   // 1️⃣ Remove any previous SVG in this div
   d3.select("#structureChart").selectAll("*").remove();
   console.log("Structure field:", filteredData[0]["Structure"]);//testing for an undefined field
@@ -284,135 +290,123 @@ structureSvg.append("g")
   .attr("font-weight", "bold")
   .text("Subway Stations by Structure Type");
 
-// --------------------
-// ADA BAR CHART DATA
-// --------------------
-// get ADA counts by borough
-const boroughSummary = d3.rollups(
-  data,
-  v => ({
-    ADA: v.filter(d => d.ADA === "1").length,
-    nonADA: v.filter(d => d.ADA === "0").length
-  }),
-  d => d.Borough
-).map(([borough, counts]) => ({
-  borough,
-  ADA: counts.ADA,
-  nonADA: counts.nonADA
-}));
-const x = d3.scaleBand()//set x-scale for bar
-  .domain(boroughSummary.map(d => d.borough))
-  .range([50, 350])
-  .padding(0.2);
+function drawAdaChart(filteredData) {
 
-const y = d3.scaleLinear()//set y-scale for bar
-  .domain([0, d3.max(boroughSummary, d => d.ADA + d.nonADA)])
-  .nice()
-  .range([250, 50]);
-console.log("Borough ADA summary:", boroughSummary);
+  // clear chart before redraw
+  d3.select("#adaChart").html("");
 
-// ADA bars in black
-adaSvg.selectAll(".adaBar")
-  .data(boroughSummary)
-  .enter()
-  .append("rect")
-  .attr("class","adaBar")
-  .attr("x", d => x(d.borough))           // left side
-  .attr("y", d => y(d.ADA))
-  .attr("width", x.bandwidth()/2)         // half-width
-  .attr("height", d => 250 - y(d.ADA))
-  .attr("fill","black");
+  const svg = d3.select("#adaChart")
+    .append("svg")
+    .attr("width", barWidth + margin.left + margin.right)
+    .attr("height", barHeight + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", `translate(${margin.left},${margin.top})`);
 
-// Non-ADA bars in gray
-adaSvg.selectAll(".nonAdaBar")
-  .data(boroughSummary)
-  .enter()
-  .append("rect")
-  .attr("class","nonAdaBar")
-  .attr("x", d => x(d.borough) + x.bandwidth()/2)   // shift right
-  .attr("y", d => y(d.nonADA))
-  .attr("width", x.bandwidth()/2)
-  .attr("height", d => 250 - y(d.nonADA))
-  .attr("fill","lightgray");
+  // --------------------
+  // DATA
+  // --------------------
+  const boroughSummary = d3.rollups(
+    filteredData,
+    v => ({
+      ADA: v.filter(d => d.ADA === "1").length,
+      nonADA: v.filter(d => d.ADA === "0").length
+    }),
+    d => d.Borough
+  ).map(([borough, counts]) => ({
+    borough,
+    ADA: counts.ADA,
+    nonADA: counts.nonADA
+  }));
 
-  adaSvg.append("g")
-  .attr("transform","translate(0,250)")
-  .call(d3.axisBottom(x));
+  // --------------------
+  // SCALES
+  // --------------------
+  const x = d3.scaleBand()
+    .domain(boroughSummary.map(d => d.borough))
+    .range([0, barWidth])
+    .padding(0.2);
 
-adaSvg.append("g")
-  .attr("transform","translate(50,0)")
-  .call(d3.axisLeft(y));
+  const y = d3.scaleLinear()
+    .domain([0, d3.max(boroughSummary, d => d.ADA + d.nonADA)])
+    .nice()
+    .range([barHeight, 0]);
 
-  //ADA bar graph title
-  adaSvg.append("text")
-  .attr("x", barWidth/2)
-  .attr("y", 30)
-  .attr("text-anchor", "middle")
-  .attr("font-weight", "bold")
-  .text("ADA vs Non-ADA Stations by Borough");
-});
+  // --------------------
+  // BARS
+  // --------------------
 
-  //draw the legend, ADA
-const adaLegend = [
-  { label: "ADA Accessible", type: "ada" },
-  { label: "Not Accessible", type: "nonada" }
-];
-const legend = adaSvg.append("g")
-  .attr("transform", "translate(300,50)");
-legend.selectAll("rect")
-  .data(adaLegend)
-  .enter()
-  .append("rect")
-  .attr("x", 0)
-  .attr("y", (d,i) => i*20)
-  .attr("width", 12)
-  .attr("height", 12)
-  .attr("fill", d => d.color);
-legend.selectAll("text")
-  .data(adaLegend)
-  .enter()
-  .append("text")
-  .attr("x", 18)
-  .attr("y", (d,i) => i*20 + 10)
-  .text(d => d.label)
-  .attr("font-size", "12px");
-const ada = svg.append("g")
-  .attr("transform", "translate(20,140)");
-ada.append("text")
-  .text("Accessibility")
-  .attr("y", -5)
-  .attr("font-weight", "bold");
+  // ADA (black)
+  svg.selectAll(".adaBar")
+    .data(boroughSummary)
+    .enter()
+    .append("rect")
+    .attr("class","adaBar")
+    .attr("x", d => x(d.borough))
+    .attr("y", d => y(d.ADA))
+    .attr("width", x.bandwidth()/2)
+    .attr("height", d => barHeight - y(d.ADA))
+    .attr("fill","black");
 
-ada.selectAll("circle")
-  .data(adaLegend)
-  .enter()
-  .append("circle")
-  .attr("cx", 6)
-  .attr("cy", (d,i) => i * 20 + 15)
-  .attr("r", 5)
-  .attr("fill", "gray")
-  .attr("stroke", d => d.type === "ada" ? "black" : "none")
-  .attr("stroke-width", d => d.type === "ada" ? 2 : 0);
+  // non-ADA (gray)
+  svg.selectAll(".nonAdaBar")
+    .data(boroughSummary)
+    .enter()
+    .append("rect")
+    .attr("class","nonAdaBar")
+    .attr("x", d => x(d.borough) + x.bandwidth()/2)
+    .attr("y", d => y(d.nonADA))
+    .attr("width", x.bandwidth()/2)
+    .attr("height", d => barHeight - y(d.nonADA))
+    .attr("fill","lightgray");
 
-ada.selectAll(".adaLabel")
-  .data(adaLegend)
-  .enter()
-  .append("text")
-  .attr("class", "adaLabel")
-  .attr("x", 18)
-  .attr("y", (d,i) => i * 20 + 19)//manual adjustment
-  .text(d => d.label)
-  .attr("font-size", "12px");
+  // --------------------
+  // AXES
+  // --------------------
+  svg.append("g")
+    .attr("transform", `translate(0,${barHeight})`)
+    .call(d3.axisBottom(x));
 
-  // ADA bars (black)
-adaSvg.selectAll(".adaBar")
-  .data(boroughSummary)
-  .enter()
-  .append("rect")
-  .attr("class","adaBar")
-  .attr("x", d => x(d.borough))
-  .attr("y", d => y(d.ADA))
-  .attr("width", x.bandwidth()/2)
-  .attr("height", d => 250 - y(d.ADA))
-  .attr("fill","black");
+  svg.append("g")
+    .call(d3.axisLeft(y));
+
+  // --------------------
+  // TITLE
+  // --------------------
+  svg.append("text")
+    .attr("x", barWidth / 2)
+    .attr("y", -10)
+    .attr("text-anchor", "middle")
+    .attr("font-weight", "bold")
+    .text("ADA vs Non-ADA Stations by Borough");
+
+  // --------------------
+  // LEGEND
+  // --------------------
+  const legendData = [
+    { label: "ADA Accessible", color: "black" },
+    { label: "Not Accessible", color: "lightgray" }
+  ];
+
+  const legend = svg.append("g")
+    .attr("transform", `translate(${barWidth - 120},20)`);
+
+  legend.selectAll("rect")
+    .data(legendData)
+    .enter()
+    .append("rect")
+    .attr("x", 0)
+    .attr("y", (d,i) => i * 20)
+    .attr("width", 12)
+    .attr("height", 12)
+    .attr("fill", d => d.color);
+
+  legend.selectAll("text")
+    .data(legendData)
+    .enter()
+    .append("text")
+    .attr("x", 18)
+    .attr("y", (d,i) => i * 20 + 10)
+    .text(d => d.label)
+    .attr("font-size", "12px");
+}
 
