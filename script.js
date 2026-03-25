@@ -231,17 +231,7 @@ const structureSummary = rolled
     .attr("y", d => y(d.count))
     .attr("width", x.bandwidth())
     .attr("height", d => barHeight - y(d.count))
-    .attr("fill", "#69b3a2")
-    .on("click", function(event, d) {
-    const filteredData = window.fullData.filter(row =>
-      row.Structure === d.structure
-    );
-
-    drawAdaChart(filteredData);
-    drawStructureChart(filteredData);
-
-    updateMap(filteredData);
-  });
+    .attr("fill", "#69b3a2");
 
 // X-axis
 svg2.append("g")
@@ -255,6 +245,7 @@ svg2.append("g")
 svg2.append("g")
   .attr("transform", `translate(0, 0)`)              // ✅ no shift needed
   .call(d3.axisLeft(y));
+}
 
 console.log("Structure summary:", structureSummary);
 
@@ -302,7 +293,6 @@ structureSvg.append("g")
   .attr("text-anchor", "middle")
   .attr("font-weight", "bold")
   .text("Subway Stations by Structure Type");
-}
 
 function drawAdaChart(filteredData) {
 
@@ -315,7 +305,7 @@ function drawAdaChart(filteredData) {
   .attr("height", barHeight + margin.top + margin.bottom)
   .append("g")
   .attr("transform", `translate(${margin.left},${margin.top})`);
-  
+
   // --------------------
   // DATA
   // --------------------
@@ -345,49 +335,34 @@ function drawAdaChart(filteredData) {
     .nice()
     .range([barHeight, 0]);
 
-// --------------------
-// BARS
-// --------------------
+  // --------------------
+  // BARS
+  // --------------------
 
-// ADA (black)
-svg.selectAll(".adaBar")
-  .data(boroughSummary)
-  .enter()
-  .append("rect")
-  .attr("class","adaBar")
-  .attr("x", d => x(d.borough))
-  .attr("y", d => y(d.ADA))
-  .attr("width", x.bandwidth()/2)
-  .attr("height", d => barHeight - y(d.ADA))
-  .attr("fill","black")
-  .on("click", function(event, d) {
-    const filteredData = window.fullData.filter(row =>
-      row.ADA === "1" && row.Borough === d.borough
-    );
-    drawAdaChart(filteredData);          // redraw ADA chart filtered
-    drawStructureChart(filteredData);    // redraw Structure chart filtered
-    updateMap(filteredData);             // filter map
-  });
+  // ADA (black)
+  svg.selectAll(".adaBar")
+    .data(boroughSummary)
+    .enter()
+    .append("rect")
+    .attr("class","adaBar")
+    .attr("x", d => x(d.borough))
+    .attr("y", d => y(d.ADA))
+    .attr("width", x.bandwidth()/2)
+    .attr("height", d => barHeight - y(d.ADA))
+    .attr("fill","black");
 
-// non-ADA (gray)
-svg.selectAll(".nonAdaBar")
-  .data(boroughSummary)
-  .enter()
-  .append("rect")
-  .attr("class","nonAdaBar")
-  .attr("x", d => x(d.borough) + x.bandwidth()/2)
-  .attr("y", d => y(d.nonADA))
-  .attr("width", x.bandwidth()/2)
-  .attr("height", d => barHeight - y(d.nonADA))
-  .attr("fill","lightgray")
-  .on("click", function(event, d) {
-    const filteredData = window.fullData.filter(row =>
-      row.ADA === "0" && row.Borough === d.borough
-    );
-    drawAdaChart(filteredData);          
-    drawStructureChart(filteredData);    
-    updateMap(filteredData);             
-  });
+  // non-ADA (gray)
+  svg.selectAll(".nonAdaBar")
+    .data(boroughSummary)
+    .enter()
+    .append("rect")
+    .attr("class","nonAdaBar")
+    .attr("x", d => x(d.borough) + x.bandwidth()/2)
+    .attr("y", d => y(d.nonADA))
+    .attr("width", x.bandwidth()/2)
+    .attr("height", d => barHeight - y(d.nonADA))
+    .attr("fill","lightgray");
+
   // --------------------
   // AXES
   // --------------------
@@ -437,21 +412,4 @@ svg.selectAll(".nonAdaBar")
     .attr("y", (d,i) => i * 20 + 10)
     .text(d => d.label)
     .attr("font-size", "12px");
-
-  drawAdaChart(filteredData);
-  drawStructureChart(filteredData);
-
-  // also update map
-  updateMap(filteredData);
-}
-
-function updateMap(filteredData) {
-  svg.selectAll("circle")
-    .data(filteredData, d => d.Station_ID)
-    .join("circle")
-    .attr("cx", d => projection([d.Longitude, d.Latitude])[0])
-    .attr("cy", d => projection([d.Longitude, d.Latitude])[1])
-    .attr("r", 3)
-    .attr("fill", d => boroughColor[d.Borough])
-    .attr("opacity", 0.7);
 }
