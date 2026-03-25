@@ -110,16 +110,17 @@ svg.selectAll("circle")
         .attr("stroke", bar => bar.structure === d.Structure ? "orange" : "none")
         .attr("stroke-width", bar => bar.structure === d.Structure ? 3 : 0);
 
-      // 4 Highlight bars in ADA chart
-      d3.select("#adaChart").selectAll(".adaBar, .nonAdaBar")
-  .attr("stroke", function(bar) {
-    if (d.ADA === "1") return d3.select(this).classed("adaBar") ? "orange" : "none";
-    else return d3.select(this).classed("nonAdaBar") ? "orange" : "none";
-  })
-  .attr("stroke-width", function(bar) {
-    if (d.ADA === "1") return d3.select(this).classed("adaBar") ? 3 : 0;
-    else return d3.select(this).classed("nonAdaBar") ? 3 : 0;
-  });
+      // Highlight ADA bar for the borough
+  d3.select("#adaChart").selectAll(".adaBar, .nonAdaBar")
+    .attr("stroke", function(bar) {
+      // select correct bar set and correct borough
+      if (d.ADA === "1") return d3.select(this).classed("adaBar") && bar.borough === d.Borough ? "orange" : "none";
+      else return d3.select(this).classed("nonAdaBar") && bar.borough === d.Borough ? "orange" : "none";
+    })
+    .attr("stroke-width", function(bar) {
+      if (d.ADA === "1") return d3.select(this).classed("adaBar") && bar.borough === d.Borough ? 3 : 0;
+      else return d3.select(this).classed("nonAdaBar") && bar.borough === d.Borough ? 3 : 0;
+    });
 });
 });
 // --------------------
