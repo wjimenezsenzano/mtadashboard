@@ -35,7 +35,7 @@ d3.csv("MTA_Subway_Stations.csv").then(function(data) {
   console.log("CSV loaded! Woo!");
   console.log("First row:", data[0]);
 
- drawStructureChart(data); 
+ //drawStructureChart(data); 
 // --------------------
 // MAP DATA
 // --------------------
