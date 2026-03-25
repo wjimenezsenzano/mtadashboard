@@ -210,17 +210,7 @@ const structureSummary = rolled
   .attr("width", barWidth + margin.left + margin.right)
   .attr("height", barHeight + margin.top + margin.bottom)
   .append("g")
-  .attr("transform", `translate(${margin.left},${margin.top})`)
-  .on("click", function(event, d) {
-    const filteredData = window.fullData.filter(row =>
-      row.Structure === d.structure
-    );
-
-    drawAdaChart(filteredData);
-    drawStructureChart(filteredData);
-
-    updateMap(filteredData);
-  });
+  .attr("transform", `translate(${margin.left},${margin.top})`);
 
   // 4️⃣ Scales
   const x = d3.scaleBand()
@@ -241,7 +231,17 @@ const structureSummary = rolled
     .attr("y", d => y(d.count))
     .attr("width", x.bandwidth())
     .attr("height", d => barHeight - y(d.count))
-    .attr("fill", "#69b3a2");
+    .attr("fill", "#69b3a2")
+    .on("click", function(event, d) {
+    const filteredData = window.fullData.filter(row =>
+      row.Structure === d.structure
+    );
+
+    drawAdaChart(filteredData);
+    drawStructureChart(filteredData);
+
+    updateMap(filteredData);
+  });
 
 // X-axis
 svg2.append("g")
@@ -314,17 +314,8 @@ function drawAdaChart(filteredData) {
   .attr("width", barWidth + margin.left + margin.right)
   .attr("height", barHeight + margin.top + margin.bottom)
   .append("g")
-  .attr("transform", `translate(${margin.left},${margin.top})`)
-  .on("click", function(event, d) {
-    const filteredData = window.fullData.filter(row =>
-      row.Structure === d.structure
-    );
-
-    drawAdaChart(filteredData);
-    drawStructureChart(filteredData);
-
-    updateMap(filteredData);
-  });
+  .attr("transform", `translate(${margin.left},${margin.top})`);
+  
   // --------------------
   // DATA
   // --------------------
@@ -354,34 +345,49 @@ function drawAdaChart(filteredData) {
     .nice()
     .range([barHeight, 0]);
 
-  // --------------------
-  // BARS
-  // --------------------
+// --------------------
+// BARS
+// --------------------
 
-  // ADA (black)
-  svg.selectAll(".adaBar")
-    .data(boroughSummary)
-    .enter()
-    .append("rect")
-    .attr("class","adaBar")
-    .attr("x", d => x(d.borough))
-    .attr("y", d => y(d.ADA))
-    .attr("width", x.bandwidth()/2)
-    .attr("height", d => barHeight - y(d.ADA))
-    .attr("fill","black");
+// ADA (black)
+svg.selectAll(".adaBar")
+  .data(boroughSummary)
+  .enter()
+  .append("rect")
+  .attr("class","adaBar")
+  .attr("x", d => x(d.borough))
+  .attr("y", d => y(d.ADA))
+  .attr("width", x.bandwidth()/2)
+  .attr("height", d => barHeight - y(d.ADA))
+  .attr("fill","black")
+  .on("click", function(event, d) {
+    const filteredData = window.fullData.filter(row =>
+      row.ADA === "1" && row.Borough === d.borough
+    );
+    drawAdaChart(filteredData);          // redraw ADA chart filtered
+    drawStructureChart(filteredData);    // redraw Structure chart filtered
+    updateMap(filteredData);             // filter map
+  });
 
-  // non-ADA (gray)
-  svg.selectAll(".nonAdaBar")
-    .data(boroughSummary)
-    .enter()
-    .append("rect")
-    .attr("class","nonAdaBar")
-    .attr("x", d => x(d.borough) + x.bandwidth()/2)
-    .attr("y", d => y(d.nonADA))
-    .attr("width", x.bandwidth()/2)
-    .attr("height", d => barHeight - y(d.nonADA))
-    .attr("fill","lightgray");
-
+// non-ADA (gray)
+svg.selectAll(".nonAdaBar")
+  .data(boroughSummary)
+  .enter()
+  .append("rect")
+  .attr("class","nonAdaBar")
+  .attr("x", d => x(d.borough) + x.bandwidth()/2)
+  .attr("y", d => y(d.nonADA))
+  .attr("width", x.bandwidth()/2)
+  .attr("height", d => barHeight - y(d.nonADA))
+  .attr("fill","lightgray")
+  .on("click", function(event, d) {
+    const filteredData = window.fullData.filter(row =>
+      row.ADA === "0" && row.Borough === d.borough
+    );
+    drawAdaChart(filteredData);          
+    drawStructureChart(filteredData);    
+    updateMap(filteredData);             
+  });
   // --------------------
   // AXES
   // --------------------
