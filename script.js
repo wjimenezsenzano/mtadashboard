@@ -275,7 +275,20 @@ function drawStructureChart(filteredData) {
     .attr("font-size", "16px")
     .text("Subway Stations by Structure Type");
 
-  console.log("Structure summary:", structureSummary);
+  svg.selectAll("rect")
+  .on("mouseover", (event, d) => {
+    tooltip
+      .style("visibility", "visible")
+      .html(`<b>${d.structure}</b><br>Stations: ${d.count}`);
+  })
+  .on("mousemove", (event) => {
+    tooltip
+      .style("top", (event.pageY + 10) + "px")
+      .style("left", (event.pageX + 10) + "px");
+  })
+  .on("mouseout", () => {
+    tooltip.style("visibility", "hidden");
+  });
 }
 
 function drawAdaChart(filteredData) {
@@ -353,6 +366,23 @@ const boroughFullName = {
     .attr("width", x.bandwidth()/2)
     .attr("height", d => barHeight - y(d.nonADA))
     .attr("fill","lightgray");
+
+svg.selectAll(".adaBar, .nonAdaBar")
+  .on("mouseover", (event, d) => {
+    const type = d3.select(event.target).classed("adaBar") ? "ADA" : "Non-ADA";
+    const count = type === "ADA" ? d.ADA : d.nonADA;
+    tooltip
+      .style("visibility", "visible")
+      .html(`<b>${d.borough}</b><br>${type}: ${count}`);
+  })
+  .on("mousemove", (event) => {
+    tooltip
+      .style("top", (event.pageY + 10) + "px")
+      .style("left", (event.pageX + 10) + "px");
+  })
+  .on("mouseout", () => {
+    tooltip.style("visibility", "hidden");
+  });
 
   // --------------------
   // AXES
