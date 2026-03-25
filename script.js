@@ -251,8 +251,10 @@ console.log("Structure summary:", structureSummary);
 
 const structureSvg = d3.select("#structureChart")
   .append("svg")
-  .attr("width", barWidth)
-  .attr("height", barHeight);
+  .attr("width", barWidth + margin.left + margin.right)
+  .attr("height", barHeight + margin.top + margin.bottom)
+  .append("g")
+  .attr("transform", `translate(${margin.left},${margin.top})`);
 
 const xStruct = d3.scaleBand()
   .domain(structureSummary.map(d => d.structure))
@@ -288,10 +290,11 @@ structureSvg.append("g")
   
   //title
   structureSvg.append("text")
-  .attr("x", barWidth / 2)
-  .attr("y", 30)
+  .attr("x", barWidth / 2)       // center relative to chart width
+  .attr("y", -margin.top / 2)    // position above chart area
   .attr("text-anchor", "middle")
   .attr("font-weight", "bold")
+  .attr("font-size", "16px")
   .text("Subway Stations by Structure Type");
 
 function drawAdaChart(filteredData) {
