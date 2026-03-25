@@ -34,6 +34,8 @@ const structureSvg = d3.select("#structureChart")
 d3.csv("MTA_Subway_Stations.csv").then(function(data) {
   console.log("CSV loaded! Woo!");
   console.log("First row:", data[0]);
+
+ drawStructureChart(data); 
 // --------------------
 // MAP DATA
 // --------------------
@@ -185,9 +187,10 @@ function drawStructureChart(filteredData) {
 
   // 2️⃣ Compute summary counts and sort descending
   const structureSummary = d3.rollups(
-    filteredData,
-    v => v.length,
-    d => d.Structure
+  filteredData,   //  data
+  v => v.length,
+  d => d.Structure
+)
   )
   .map(([structure, count]) => ({ structure, count }))
   .sort((a, b) => b.count - a.count);
