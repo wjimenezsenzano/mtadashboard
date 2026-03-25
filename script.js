@@ -105,7 +105,21 @@ svg.selectAll("circle")
     .attr("r", station =>
       station["Stop Name"] === d["Stop Name"] ? 6 : 3
     );
+    // Highlight bars in Structure chart
+      d3.select("#structureChart").selectAll(".structBar")
+        .attr("stroke", bar => bar.structure === d.Structure ? "orange" : "none")
+        .attr("stroke-width", bar => bar.structure === d.Structure ? 3 : 0);
 
+      // 4 Highlight bars in ADA chart
+      d3.select("#adaChart").selectAll(".adaBar, .nonAdaBar")
+        .attr("stroke", bar => {
+          if (d.ADA === "1") return d3.select(this).classed("adaBar") ? "orange" : "none";
+          else return d3.select(this).classed("nonAdaBar") ? "orange" : "none";
+        })
+        .attr("stroke-width", bar => {
+          if (d.ADA === "1") return d3.select(this).classed("adaBar") ? 3 : 0;
+          else return d3.select(this).classed("nonAdaBar") ? 3 : 0;
+        });
 });
 });
 // --------------------
