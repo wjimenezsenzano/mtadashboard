@@ -305,7 +305,14 @@ function drawAdaChart(filteredData) {
     ADA: counts.ADA,
     nonADA: counts.nonADA
   }));
-
+  //full names for unabbreviations
+const boroughFullName = {
+  "M": "Manhattan",
+  "Bk": "Brooklyn",
+  "Q": "Queens",
+  "Bx": "Bronx",
+  "SI": "Staten Island"
+};
   // --------------------
   // SCALES
   // --------------------
