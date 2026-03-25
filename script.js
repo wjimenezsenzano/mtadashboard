@@ -48,6 +48,17 @@ d3.csv("MTA_Subway_Stations.csv").then(function(data) {
     d.Latitude = +d["GTFS Latitude"];
     d.Longitude = +d["GTFS Longitude"];
   });
+
+//Color according to Boroughs
+svg.selectAll("circle")
+  .data(data)
+  .enter()
+  .append("circle")
+  .attr("cx", d => projection([d.Longitude, d.Latitude])[0])
+  .attr("cy", d => projection([d.Longitude, d.Latitude])[1])
+  .attr("r", 3)
+  .attr("fill", d => boroughColor[d.Borough])
+  .attr("opacity", 0.7)
 });
 // --------------------
 // MAP DATA
@@ -90,16 +101,6 @@ const boroughColor = {
   "SI": "#ff7f00"    // Staten Island - orange
 };
 
-//Color according to Boroughs
-svg.selectAll("circle")
-  .data(data)
-  .enter()
-  .append("circle")
-  .attr("cx", d => projection([d.Longitude, d.Latitude])[0])
-  .attr("cy", d => projection([d.Longitude, d.Latitude])[1])
-  .attr("r", 3)
-  .attr("fill", d => boroughColor[d.Borough])
-  .attr("opacity", 0.7)
 
 //ADA accessibility outlines
 .attr("stroke", d => d.ADA > 0 ? "black" : "none")
