@@ -59,62 +59,54 @@ svg.selectAll("circle")
   .attr("r", 3)
   .attr("fill", d => boroughColor[d.Borough])
   .attr("opacity", 0.7)
-  // ADA accessibility outlines
-  .attr("stroke", d => d.ADA === "1" ? "black" : "none")
-  .attr("stroke-width", d => d.ADA === "1" ? 2 : 0)
-  // Combined mouseover for tooltip + ADA bar highlight
-  .on("mouseover", function(event, d) {
-    // Tooltip
-    tooltip.style("visibility", "visible").text(d["Stop Name"]);
+  //ADA accessibility outlines
+.attr("stroke", d => d.ADA > 0 ? "black" : "none")
+.attr("stroke-width", d => d.ADA > 0 ? 2 : 0)
 
-    // Highlight the correct ADA bar
-    adaSvg.selectAll(".adaBar, .nonAdaBar")
-      .attr("opacity", b => {
-        if (d.ADA === "1") {
-          return d3.select(this).classed("adaBar") ? 1 : 0.2;
-        } else {
-          return d3.select(this).classed("nonAdaBar") ? 1 : 0.2;
-        }
-      });
-  })
-  .on("mousemove", (event) => {
-    tooltip
-      .style("top", (event.pageY + 10) + "px")
-      .style("left", (event.pageX + 10) + "px");
-  })
-  .on("mouseout", function() {
-    // Hide tooltip
-    tooltip.style("visibility", "hidden");
+//mouseover events
+.on("mouseover", (event, d) => {
+  tooltip
+    .style("visibility", "visible")
+    .text(d["Stop Name"]);
+})
+.on("mousemove", (event) => {
+  tooltip
+    .style("top", (event.pageY + 10) + "px")
+    .style("left", (event.pageX + 10) + "px");
+})
+.on("mouseout", () => {
+  tooltip.style("visibility", "hidden");
+})
 
-    // Reset ADA bars opacity
-    adaSvg.selectAll(".adaBar, .nonAdaBar").attr("opacity", 1);
-  })
-  // click event for station info panel
-  .on("click", (event, d) => {
-    event.stopPropagation();
+// click event for station info panel
+.on("click", (event, d) => {
 
-    // Info panel
-    d3.select("#stationInfo")
-      .style("display", "block")
-      .html(`
-        <h3>${d["Stop Name"]}</h3>
-        <p><b>Borough:</b> ${d.Borough}</p>
-        <p><b>Routes:</b> ${d["Daytime Routes"]}</p>
-        <p><b>Structure:</b> ${d.Structure}</p>
-        <p><b>ADA Accessible:</b> ${d.ADA === "1" ? "Yes" : "No"}</p>
-      `);
+  //Prevent background reset click from firing
+  event.stopPropagation();
 
-    // Highlight selected station + fade others
-    svg.selectAll("circle")
-      .transition()
-      .duration(400)
-      .attr("opacity", station =>
-        station["Stop Name"] === d["Stop Name"] ? 1 : 0.15
-      )
-      .attr("r", station =>
-        station["Stop Name"] === d["Stop Name"] ? 6 : 3
-      );
-  });
+  // 1. Info panel on click
+  d3.select("#stationInfo")
+    .style("display", "block")
+    .html(`
+      <h3>${d["Stop Name"]}</h3>
+      <p><b>Borough:</b> ${d.Borough}</p>
+      <p><b>Routes:</b> ${d["Daytime Routes"]}</p>
+      <p><b>Structure:</b> ${d.Structure}</p>
+      <p><b>ADA Accessible:</b> ${d.ADA === "1" ? "Yes" : "No"}</p>
+    `);
+
+  // 2. Highlight selected station + fade others (with animation)
+  svg.selectAll("circle")
+    .transition()
+    .duration(400)
+    .attr("opacity", station =>
+      station["Stop Name"] === d["Stop Name"] ? 1 : 0.15
+    )
+    .attr("r", station =>
+      station["Stop Name"] === d["Stop Name"] ? 6 : 3
+    );
+
+});
 });
 // --------------------
 // MAP DATA
@@ -370,25 +362,6 @@ function drawAdaChart(filteredData) {
     .attr("width", x.bandwidth()/2)
     .attr("height", d => barHeight - y(d.nonADA))
     .attr("fill","lightgray");
-
-// Hover interaction for ADA bars
-adaSvg.selectAll(".adaBar, .nonAdaBar")
-  .on("mouseover", function(event, d) {
-    // Highlight corresponding stations on the map
-    svg.selectAll("circle")
-      .attr("opacity", s => {
-        if (d3.select(this).classed("adaBar")) {
-          return s.ADA === "1" ? 1 : 0.2;
-        } else {
-          return s.ADA === "0" ? 1 : 0.2;
-        }
-      });
-  })
-  .on("mouseout", function() {
-    // Reset all stations
-    svg.selectAll("circle")
-      .attr("opacity", 0.7);
-  });
 
   // --------------------
   // AXES
