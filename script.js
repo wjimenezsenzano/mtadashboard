@@ -32,7 +32,7 @@ const svg = d3.select("#map")
 
 // Load data
 d3.csv("MTA_Subway_Stations.csv").then(function(data) {
-   drawMap(data); 
+
   console.log("CSV loaded! Woo!");
   console.log("First row:", data[0]);
 
@@ -42,15 +42,17 @@ d3.csv("MTA_Subway_Stations.csv").then(function(data) {
 
   // store globally for filtering and interactions later
   window.fullData = data;      // 
-});
-// --------------------
-// MAP DATA
-// --------------------
+
   // Convert latitude/longitude to numbers
   data.forEach(d => {
     d.Latitude = +d["GTFS Latitude"];
     d.Longitude = +d["GTFS Longitude"];
   });
+});
+// --------------------
+// MAP DATA
+// --------------------
+  
 
   //Tooltip upon hover
 const tooltip = d3.select("body")
