@@ -63,7 +63,7 @@ svg.selectAll("circle")
 .attr("stroke", d => d.ADA > 0 ? "black" : "none")
 .attr("stroke-width", d => d.ADA > 0 ? 2 : 0)
 
-//mouseover events
+// mouseover tooltip
 .on("mouseover", (event, d) => {
   tooltip
     .style("visibility", "visible")
@@ -78,13 +78,12 @@ svg.selectAll("circle")
   tooltip.style("visibility", "hidden");
 })
 
-// click event for station info panel
+// click event for station info panel + chart highlighting
 .on("click", (event, d) => {
-
-  //Prevent background reset click from firing
+  // Prevent background reset click from firing
   event.stopPropagation();
 
-  // 1. Info panel on click
+  // 1️⃣ Info panel on click
   d3.select("#stationInfo")
     .style("display", "block")
     .html(`
@@ -95,7 +94,7 @@ svg.selectAll("circle")
       <p><b>ADA Accessible:</b> ${d.ADA === "1" ? "Yes" : "No"}</p>
     `);
 
-  // 2. Highlight selected station + fade others (with animation)
+  // 2️⃣ Highlight selected station + fade others
   svg.selectAll("circle")
     .transition()
     .duration(400)
@@ -106,7 +105,32 @@ svg.selectAll("circle")
       station["Stop Name"] === d["Stop Name"] ? 6 : 3
     );
 
-});
+  // 3️⃣ Remove previous arrows from both charts
+  adaSvg.selectAll(".arrow").remove();
+  structureSvg.selectAll(".arrow").remove();
+
+  // 4️⃣ Draw arrow on ADA chart
+  const barType = d.ADA === "1" ? ".adaBar" : ".nonAdaBar";
+  adaSvg.selectAll(barType).each(function(b) {
+    if (b.borough === d.Borough) {
+      const bbox = this.getBBox();
+      adaSvg.append("polygon")
+        .attr("class", "arrow")
+        .attr("points", `${bbox.x + bbox.width/2},${bbox.y - 8} ${bbox.x + bbox.width/2 - 5},${bbox.y} ${bbox.x + bbox.width/2 + 5},${bbox.y}`)
+        .attr("fill", "red");
+    }
+  });
+
+  // 5️⃣ Draw arrow on Structure chart
+  structureSvg.selectAll(".structBar").each(function(s) {
+    if (s.structure === d.Structure) {
+      const bbox = this.getBBox();
+      structureSvg.append("polygon")
+        .attr("class", "arrow")
+        .attr("points", `${bbox.x + bbox.width/2},${bbox.y - 8} ${bbox.x + bbox.width/2 - 5},${bbox.y} ${bbox.x + bbox.width/2 + 5},${bbox.y}`)
+        .attr("fill", "red");
+    }
+  });
 });
 // --------------------
 // MAP DATA
@@ -413,3 +437,4 @@ function drawAdaChart(filteredData) {
     .text(d => d.label)
     .attr("font-size", "12px");
 }
+})
