@@ -16,20 +16,14 @@ const svg = d3.select("#map")
   .attr("width", width)
   .attr("height", height);
 
-// //creating drawing canvases for both chart elements so D3 can draw
-// const adaSvg = d3.select("#adaChart")
-//   .append("svg")
-//   .attr("width", barWidth + margin.left + margin.right)
-//   .attr("height", barHeight + margin.top + margin.bottom)
-//   .append("g")
-//   .attr("transform", `translate(${margin.left},${margin.top})`);
-// const structureSvg = d3.select("#structureChart")
-//   .append("svg")
-//   .attr("width", barWidth + margin.left + margin.right)
-//   .attr("height", barHeight + margin.top + margin.bottom)
-//   .append("g")
-//   .attr("transform", `translate(${margin.left},${margin.top})`);
-
+//for later reference
+const boroughFullNames = {
+  "M": "Manhattan",
+  "Bk": "Brooklyn",
+  "Bx": "Bronx",
+  "Q": "Queens",
+  "SI": "Staten Island"
+};
 // Load data
 d3.csv("MTA_Subway_Stations.csv").then(function(data) {
 
@@ -373,7 +367,7 @@ svg.selectAll(".adaBar, .nonAdaBar")
     const count = type === "ADA" ? d.ADA : d.nonADA;
     tooltip
       .style("visibility", "visible")
-      .html(`<b>${d.borough}</b><br>${type}: ${count}`);
+      .html(`<b>${boroughFullNames[d.borough]}</b><br>${type}: ${count}`);
   })
   .on("mousemove", (event) => {
     tooltip
