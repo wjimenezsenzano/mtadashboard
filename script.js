@@ -48,12 +48,6 @@ d3.csv("MTA_Subway_Stations.csv").then(function(data) {
     d.Latitude = +d["GTFS Latitude"];
     d.Longitude = +d["GTFS Longitude"];
   });
-  
-  // Define projection map centered on NYC
-  const projection = d3.geoMercator()
-    .center([-73.94, 40.70])   // NYC approx center data points
-    .scale(80000)              // zoom in level
-    .translate([width / 2, height / 2]);
 
 //Color according to Boroughs
 svg.selectAll("circle")
@@ -69,7 +63,7 @@ svg.selectAll("circle")
 .attr("stroke", d => d.ADA > 0 ? "black" : "none")
 .attr("stroke-width", d => d.ADA > 0 ? 2 : 0)
 
-// mouseover tooltip
+//mouseover events
 .on("mouseover", (event, d) => {
   tooltip
     .style("visibility", "visible")
@@ -84,12 +78,13 @@ svg.selectAll("circle")
   tooltip.style("visibility", "hidden");
 })
 
-// click event for station info panel + chart highlighting
+// click event for station info panel
 .on("click", (event, d) => {
-  // Prevent background reset click from firing
+
+  //Prevent background reset click from firing
   event.stopPropagation();
 
-  // 1️⃣ Info panel on click
+  // 1. Info panel on click
   d3.select("#stationInfo")
     .style("display", "block")
     .html(`
@@ -100,7 +95,7 @@ svg.selectAll("circle")
       <p><b>ADA Accessible:</b> ${d.ADA === "1" ? "Yes" : "No"}</p>
     `);
 
-  // 2️⃣ Highlight selected station + fade others
+  // 2. Highlight selected station + fade others (with animation)
   svg.selectAll("circle")
     .transition()
     .duration(400)
@@ -111,32 +106,7 @@ svg.selectAll("circle")
       station["Stop Name"] === d["Stop Name"] ? 6 : 3
     );
 
-  // 3️⃣ Remove previous arrows from both charts
-  adaSvg.selectAll(".arrow").remove();
-  structureSvg.selectAll(".arrow").remove();
-
-  // 4️⃣ Draw arrow on ADA chart
-  const barType = d.ADA === "1" ? ".adaBar" : ".nonAdaBar";
-  adaSvg.selectAll(barType).each(function(b) {
-    if (b.borough === d.Borough) {
-      const bbox = this.getBBox();
-      adaSvg.append("polygon")
-        .attr("class", "arrow")
-        .attr("points", `${bbox.x + bbox.width/2},${bbox.y - 8} ${bbox.x + bbox.width/2 - 5},${bbox.y} ${bbox.x + bbox.width/2 + 5},${bbox.y}`)
-        .attr("fill", "red");
-    }
-  });
-
-  // 5️⃣ Draw arrow on Structure chart
-  structureSvg.selectAll(".structBar").each(function(s) {
-    if (s.structure === d.Structure) {
-      const bbox = this.getBBox();
-      structureSvg.append("polygon")
-        .attr("class", "arrow")
-        .attr("points", `${bbox.x + bbox.width/2},${bbox.y - 8} ${bbox.x + bbox.width/2 - 5},${bbox.y} ${bbox.x + bbox.width/2 + 5},${bbox.y}`)
-        .attr("fill", "red");
-    }
-  });
+});
 });
 // --------------------
 // MAP DATA
@@ -154,6 +124,11 @@ const tooltip = d3.select("body")
   .style("font-size", "12px")
   .style("visibility", "hidden");
 
+  // Define projection map centered on NYC
+  const projection = d3.geoMercator()
+    .center([-73.94, 40.70])   // NYC approx center data points
+    .scale(80000)              // zoom in level
+    .translate([width / 2, height / 2]);
 
 
 //set up the borough names
@@ -438,4 +413,3 @@ function drawAdaChart(filteredData) {
     .text(d => d.label)
     .attr("font-size", "12px");
 }
-})
