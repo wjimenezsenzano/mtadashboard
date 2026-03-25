@@ -3,7 +3,7 @@ const width = 900;
 const height = 600;
 
 // charts size
-const margin = { top: 20, right: 20, bottom: 40, left: 40 };
+const margin = { top: 40, right: 20, bottom: 50, left: 60 };
 
 // get actual container width
 const containerWidth = document.getElementById("adaChart").clientWidth;
@@ -32,6 +32,7 @@ const svg = d3.select("#map")
 
 // Load data
 d3.csv("MTA_Subway_Stations.csv").then(function(data) {
+   drawMap(data); 
   console.log("CSV loaded! Woo!");
   console.log("First row:", data[0]);
 
@@ -205,8 +206,10 @@ const structureSummary = rolled
   // 3️⃣ Create SVG
   const svg2 = d3.select("#structureChart")
     .append("svg")
-    .attr("width", barWidth)
-    .attr("height", barHeight);
+  .attr("width", barWidth + margin.left + margin.right)
+  .attr("height", barHeight + margin.top + margin.bottom)
+  .append("g")
+  .attr("transform", `translate(${margin.left},${margin.top})`);
 
   // 4️⃣ Scales
   const x = d3.scaleBand()
@@ -216,7 +219,7 @@ const structureSummary = rolled
 
   const y = d3.scaleLinear()
     .domain([0, d3.max(structureSummary, d => d.count)])
-    .range([barHeight - 30, 0]);  // leave space for x-axis labels
+    .range([barHeight, 0]);  // leave space for x-axis labels
 
   // 5️⃣ Draw bars
   svg2.selectAll("rect")
@@ -226,21 +229,21 @@ const structureSummary = rolled
     .attr("x", d => x(d.structure))
     .attr("y", d => y(d.count))
     .attr("width", x.bandwidth())
-    .attr("height", d => barHeight - 30 - y(d.count))
+    .attr("height", d => barHeight - y(d.count))
     .attr("fill", "#69b3a2");
 
-  // 6️⃣ X-axis
-  svg2.append("g")
-    .attr("transform", `translate(0, ${barHeight - 30})`)
-    .call(d3.axisBottom(x))
-    .selectAll("text")
-    .attr("transform", "rotate(-30)")
-    .style("text-anchor", "end");
+// X-axis
+svg2.append("g")
+  .attr("transform", `translate(0, ${barHeight})`)   // ✅ anchor to bottom
+  .call(d3.axisBottom(x))
+  .selectAll("text")
+  .attr("transform", "rotate(-30)")
+  .style("text-anchor", "end");
 
-  // 7️⃣ Y-axis
-  svg2.append("g")
-    .attr("transform", `translate(0,0)`)
-    .call(d3.axisLeft(y));
+// Y-axis
+svg2.append("g")
+  .attr("transform", `translate(0, 0)`)              // ✅ no shift needed
+  .call(d3.axisLeft(y));
 }
 
 console.log("Structure summary:", structureSummary);
@@ -296,11 +299,11 @@ function drawAdaChart(filteredData) {
   d3.select("#adaChart").html("");
 
   const svg = d3.select("#adaChart")
-    .append("svg")
-    .attr("width", barWidth + margin.left + margin.right)
-    .attr("height", barHeight + margin.top + margin.bottom)
-    .append("g")
-    .attr("transform", `translate(${margin.left},${margin.top})`);
+  .append("svg")
+  .attr("width", barWidth + margin.left + margin.right)
+  .attr("height", barHeight + margin.top + margin.bottom)
+  .append("g")
+  .attr("transform", `translate(${margin.left},${margin.top})`);
 
   // --------------------
   // DATA
