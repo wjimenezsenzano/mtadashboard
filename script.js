@@ -59,50 +59,7 @@ svg.selectAll("circle")
   .attr("r", 3)
   .attr("fill", d => boroughColor[d.Borough])
   .attr("opacity", 0.7)
-});
-// --------------------
-// MAP DATA
-// --------------------
-  
-
-  //Tooltip upon hover
-const tooltip = d3.select("body")
-  .append("div")
-  .style("position", "absolute")
-  .style("background", "white")
-  .style("padding", "5px")
-  .style("border", "1px solid gray")
-  .style("border-radius", "4px")
-  .style("font-size", "12px")
-  .style("visibility", "hidden");
-
-  // Define projection map centered on NYC
-  const projection = d3.geoMercator()
-    .center([-73.94, 40.70])   // NYC approx center data points
-    .scale(80000)              // zoom in level
-    .translate([width / 2, height / 2]);
-
-
-//set up the borough names
-const boroughs = [
-  {code:"M", name:"Manhattan"},
-  {code:"Bx", name:"Bronx"},
-  {code:"Q", name:"Queens"},
-  {code:"Bk", name:"Brooklyn"},
-  {code:"SI", name:"Staten Island"}
-];
-
-//set up the borough colors
-const boroughColor = {
-  "M": "#e41a1c",   // Manhattan - red
-  "Bx": "#377eb8",   // Bronx - blue
-  "Q": "#4daf4a",   // Queens - green
-  "Bk": "#984ea3",  // Brooklyn - purple
-  "SI": "#ff7f00"    // Staten Island - orange
-};
-
-
-//ADA accessibility outlines
+  //ADA accessibility outlines
 .attr("stroke", d => d.ADA > 0 ? "black" : "none")
 .attr("stroke-width", d => d.ADA > 0 ? 2 : 0)
 
@@ -150,6 +107,47 @@ const boroughColor = {
     );
 
 });
+});
+// --------------------
+// MAP DATA
+// --------------------
+  
+
+  //Tooltip upon hover
+const tooltip = d3.select("body")
+  .append("div")
+  .style("position", "absolute")
+  .style("background", "white")
+  .style("padding", "5px")
+  .style("border", "1px solid gray")
+  .style("border-radius", "4px")
+  .style("font-size", "12px")
+  .style("visibility", "hidden");
+
+  // Define projection map centered on NYC
+  const projection = d3.geoMercator()
+    .center([-73.94, 40.70])   // NYC approx center data points
+    .scale(80000)              // zoom in level
+    .translate([width / 2, height / 2]);
+
+
+//set up the borough names
+const boroughs = [
+  {code:"M", name:"Manhattan"},
+  {code:"Bx", name:"Bronx"},
+  {code:"Q", name:"Queens"},
+  {code:"Bk", name:"Brooklyn"},
+  {code:"SI", name:"Staten Island"}
+];
+
+//set up the borough colors
+const boroughColor = {
+  "M": "#e41a1c",   // Manhattan - red
+  "Bx": "#377eb8",   // Bronx - blue
+  "Q": "#4daf4a",   // Queens - green
+  "Bk": "#984ea3",  // Brooklyn - purple
+  "SI": "#ff7f00"    // Staten Island - orange
+};
 //reset faded stations on blank clicks
 svg.on("click", () => {
   svg.selectAll("circle")
