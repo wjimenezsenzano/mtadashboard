@@ -194,7 +194,7 @@ const structureSummary = d3.rollups(
   structure,
   count
 }));
-  )
+  
   
   .map(([structure, count]) => ({ structure, count }))
   .sort((a, b) => b.count - a.count);
