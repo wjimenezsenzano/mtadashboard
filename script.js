@@ -255,7 +255,6 @@ svg2.append("g")
 svg2.append("g")
   .attr("transform", `translate(0, 0)`)              // ✅ no shift needed
   .call(d3.axisLeft(y));
-}
 
 console.log("Structure summary:", structureSummary);
 
@@ -303,6 +302,7 @@ structureSvg.append("g")
   .attr("text-anchor", "middle")
   .attr("font-weight", "bold")
   .text("Subway Stations by Structure Type");
+}
 
 function drawAdaChart(filteredData) {
 
