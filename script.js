@@ -185,34 +185,32 @@ legend.selectAll("text")
   .attr("font-size", "12px");
 
 // --------------------
-// FUNCTIONS FOR  BAR CHARTS
+// FUNCTIONS FOR BAR CHARTS
 // --------------------
-
 function drawStructureChart(filteredData) {
+  // Clear previous chart
   d3.select("#structureChart").html("");
-  // 1️⃣ Remove any previous SVG in this div
-  d3.select("#structureChart").selectAll("*").remove();
-  console.log("Structure field:", filteredData[0]["Structure"]);//testing for an undefined field
-  // 2️⃣ Compute summary counts and sort descending
-const rolled = d3.rollups(
-  filteredData,
-  v => v.length,
-  d => d["Structure"]
-);
 
-const structureSummary = rolled
-  .map(([structure, count]) => ({ structure, count }))
-  .sort((a, b) => b.count - a.count);
+  // 1️⃣ Compute summary counts and sort descending
+  const rolled = d3.rollups(
+    filteredData,
+    v => v.length,
+    d => d.Structure
+  );
 
-  // 3️⃣ Create SVG
-  const svg2 = d3.select("#structureChart")
+  const structureSummary = rolled
+    .map(([structure, count]) => ({ structure, count }))
+    .sort((a, b) => b.count - a.count);
+
+  // 2️⃣ Create SVG
+  const svg = d3.select("#structureChart")
     .append("svg")
-  .attr("width", barWidth + margin.left + margin.right)
-  .attr("height", barHeight + margin.top + margin.bottom)
-  .append("g")
-  .attr("transform", `translate(${margin.left},${margin.top})`);
+    .attr("width", barWidth + margin.left + margin.right)
+    .attr("height", barHeight + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", `translate(${margin.left},${margin.top})`);
 
-  // 4️⃣ Scales
+  // 3️⃣ Scales
   const x = d3.scaleBand()
     .domain(structureSummary.map(d => d.structure))
     .range([0, barWidth])
@@ -220,82 +218,42 @@ const structureSummary = rolled
 
   const y = d3.scaleLinear()
     .domain([0, d3.max(structureSummary, d => d.count)])
-    .range([barHeight, 0]);  // leave space for x-axis labels
+    .range([barHeight, 0]);
 
-  // 5️⃣ Draw bars
-  svg2.selectAll("rect")
+  // 4️⃣ Draw bars
+  svg.selectAll(".structBar")
     .data(structureSummary)
     .enter()
     .append("rect")
+    .attr("class", "structBar")
     .attr("x", d => x(d.structure))
     .attr("y", d => y(d.count))
     .attr("width", x.bandwidth())
     .attr("height", d => barHeight - y(d.count))
-    .attr("fill", "#69b3a2");
+    .attr("fill", "#1f78b4");
 
-// X-axis
-svg2.append("g")
-  .attr("transform", `translate(0, ${barHeight})`)   // ✅ anchor to bottom
-  .call(d3.axisBottom(x))
-  .selectAll("text")
-  .attr("transform", "rotate(-30)")
-  .style("text-anchor", "end");
+  // 5️⃣ Axes
+  svg.append("g")
+    .attr("transform", `translate(0, ${barHeight})`)
+    .call(d3.axisBottom(x))
+    .selectAll("text")
+    .attr("transform", "rotate(-30)")
+    .style("text-anchor", "end");
 
-// Y-axis
-svg2.append("g")
-  .attr("transform", `translate(0, 0)`)              // ✅ no shift needed
-  .call(d3.axisLeft(y));
+  svg.append("g")
+    .call(d3.axisLeft(y));
+
+  // 6️⃣ Title
+  svg.append("text")
+    .attr("x", barWidth / 2)
+    .attr("y", -margin.top / 2)  // above chart
+    .attr("text-anchor", "middle")
+    .attr("font-weight", "bold")
+    .attr("font-size", "16px")
+    .text("Subway Stations by Structure Type");
+
+  console.log("Structure summary:", structureSummary);
 }
-
-console.log("Structure summary:", structureSummary);
-
-const structureSvg = d3.select("#structureChart")
-  .append("svg")
-  .attr("width", barWidth + margin.left + margin.right)
-  .attr("height", barHeight + margin.top + margin.bottom)
-  .append("g")
-  .attr("transform", `translate(${margin.left},${margin.top})`);
-
-const xStruct = d3.scaleBand()
-  .domain(structureSummary.map(d => d.structure))
-  .range([50, 350])
-  .padding(0.2);
-
-const yStruct = d3.scaleLinear()
-  .domain([0, d3.max(structureSummary, d => d.count)])
-  .nice()
-  .range([250, 50]);
-
-  //draw bars
-  structureSvg.selectAll(".structBar")
-  .data(structureSummary)
-  .enter()
-  .append("rect")
-  .attr("class", "structBar")
-  .attr("x", d => xStruct(d.structure))
-  .attr("y", d => yStruct(d.count))
-  .attr("width", xStruct.bandwidth())
-  .attr("height", d => 250 - yStruct(d.count))
-  .attr("fill", "#1f78b4");  // blue
-  structureSummary.sort((a, b) => b.count - a.count);// highest -> lowest
-
-  //axes 
-structureSvg.append("g")
-  .attr("transform", "translate(0,250)")
-  .call(d3.axisBottom(xStruct));
-
-structureSvg.append("g")
-  .attr("transform", "translate(50,0)")
-  .call(d3.axisLeft(yStruct));
-  
-  //title
-  structureSvg.append("text")
-  .attr("x", barWidth / 2)       // center relative to chart width
-  .attr("y", -margin.top / 2)    // position above chart area
-  .attr("text-anchor", "middle")
-  .attr("font-weight", "bold")
-  .attr("font-size", "16px")
-  .text("Subway Stations by Structure Type");
 
 function drawAdaChart(filteredData) {
 
