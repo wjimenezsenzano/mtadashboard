@@ -16,7 +16,7 @@ const svg = d3.select("#map")
   .attr("width", width)
   .attr("height", height);
 
-//for later reference
+//for later abbreviation reference
 const boroughFullNames = {
   "M": "Manhattan",
   "Bk": "Brooklyn",
@@ -24,7 +24,7 @@ const boroughFullNames = {
   "Q": "Queens",
   "SI": "Staten Island"
 };
-// Load data
+// load data
 d3.csv("MTA_Subway_Stations.csv").then(function(data) {
 
   console.log("CSV loaded! Woo!");
@@ -37,13 +37,13 @@ d3.csv("MTA_Subway_Stations.csv").then(function(data) {
   // store globally for filtering and interactions later
   window.fullData = data;      // 
 
-  // Convert latitude/longitude to numbers
+  // convert latitude/longitude to numbers
   data.forEach(d => {
     d.Latitude = +d["GTFS Latitude"];
     d.Longitude = +d["GTFS Longitude"];
   });
 
-//Color according to Boroughs
+//color circles according to borough
 svg.selectAll("circle")
   .data(data)
   .enter()
@@ -53,6 +53,7 @@ svg.selectAll("circle")
   .attr("r", 3)
   .attr("fill", d => boroughColor[d.Borough])
   .attr("opacity", 0.7)
+ 
   //ADA accessibility outlines
 .attr("stroke", d => d.ADA > 0 ? "black" : "none")
 .attr("stroke-width", d => d.ADA > 0 ? 2 : 0)
@@ -78,7 +79,7 @@ svg.selectAll("circle")
   //Prevent background reset click from firing
   event.stopPropagation();
 
-  // 1. Info panel on click
+  // info panel on click
   d3.select("#stationInfo")
     .style("display", "block")
     .html(`
@@ -89,7 +90,7 @@ svg.selectAll("circle")
       <p><b>ADA Accessible:</b> ${d.ADA === "1" ? "Yes" : "No"}</p>
     `);
 
-  // 2. Highlight selected station + fade others (with animation)
+  // highlight selected station and fade others (with animation)
   svg.selectAll("circle")
     .transition()
     .duration(400)
@@ -99,12 +100,12 @@ svg.selectAll("circle")
     .attr("r", station =>
       station["Stop Name"] === d["Stop Name"] ? 6 : 3
     );
-    // Highlight bars in Structure chart
+    // Highlight bars in Structure chart, orange
       d3.select("#structureChart").selectAll(".structBar")
         .attr("stroke", bar => bar.structure === d.Structure ? "orange" : "none")
         .attr("stroke-width", bar => bar.structure === d.Structure ? 3 : 0);
 
-      // Highlight ADA bar for the borough
+      // Highlight ADA bar for the borough, orange
   d3.select("#adaChart").selectAll(".adaBar, .nonAdaBar")
     .attr("stroke", function(bar) {
       // select correct bar set and correct borough
@@ -120,8 +121,6 @@ svg.selectAll("circle")
 // --------------------
 // MAP DATA
 // --------------------
-  
-
   //Tooltip upon hover
 const tooltip = d3.select("body")
   .append("div")
@@ -148,7 +147,6 @@ const boroughs = [
   {code:"Bk", name:"Brooklyn"},
   {code:"SI", name:"Staten Island"}
 ];
-
 //set up the borough colors
 const boroughColor = {
   "M": "#e41a1c",   // Manhattan - red
@@ -191,7 +189,6 @@ legend.selectAll("rect")
   .attr("width", 12)
   .attr("height", 12)
   .attr("fill", d => boroughColor[d.code]);
-
 legend.selectAll("text")
   .data(boroughs)
   .enter()
@@ -204,11 +201,12 @@ legend.selectAll("text")
 // --------------------
 // FUNCTIONS FOR BAR CHARTS
 // --------------------
+
 function drawStructureChart(filteredData) {
-  // Clear previous chart
+  // clear previous chart
   d3.select("#structureChart").html("");
 
-  // 1️⃣ Compute summary counts and sort descending
+  // compute summary counts and sort descending
   const rolled = d3.rollups(
     filteredData,
     v => v.length,
@@ -219,7 +217,7 @@ function drawStructureChart(filteredData) {
     .map(([structure, count]) => ({ structure, count }))
     .sort((a, b) => b.count - a.count);
 
-  // 2️⃣ Create SVG
+  // create SVG
   const svg = d3.select("#structureChart")
     .append("svg")
     .attr("width", barWidth + margin.left + margin.right)
@@ -227,17 +225,16 @@ function drawStructureChart(filteredData) {
     .append("g")
     .attr("transform", `translate(${margin.left},${margin.top})`);
 
-  // 3️⃣ Scales
+  // scales
   const x = d3.scaleBand()
     .domain(structureSummary.map(d => d.structure))
     .range([0, barWidth])
     .padding(0.2);
-
   const y = d3.scaleLinear()
     .domain([0, d3.max(structureSummary, d => d.count)])
     .range([barHeight, 0]);
 
-  // 4️⃣ Draw bars
+  // draw bars
   svg.selectAll(".structBar")
     .data(structureSummary)
     .enter()
@@ -249,7 +246,7 @@ function drawStructureChart(filteredData) {
     .attr("height", d => barHeight - y(d.count))
     .attr("fill", "#1f78b4");
 
-  // 5️⃣ Axes
+  // axes
   svg.append("g")
     .attr("transform", `translate(0, ${barHeight})`)
     .call(d3.axisBottom(x))
@@ -260,7 +257,7 @@ function drawStructureChart(filteredData) {
   svg.append("g")
     .call(d3.axisLeft(y));
 
-  // 6️⃣ Title
+  // title
   svg.append("text")
     .attr("x", barWidth / 2)
     .attr("y", -margin.top / 2)  // above chart
@@ -269,6 +266,7 @@ function drawStructureChart(filteredData) {
     .attr("font-size", "16px")
     .text("Subway Stations by Structure Type");
 
+    //mouseover events for structure chart
   svg.selectAll("rect")
   .on("mouseover", (event, d) => {
     tooltip
@@ -286,7 +284,6 @@ function drawStructureChart(filteredData) {
 }
 
 function drawAdaChart(filteredData) {
-
   // clear chart before redraw
   d3.select("#adaChart").html("");
 
@@ -312,14 +309,7 @@ function drawAdaChart(filteredData) {
     ADA: counts.ADA,
     nonADA: counts.nonADA
   }));
-  //full names for unabbreviations
-const boroughFullName = {
-  "M": "Manhattan",
-  "Bk": "Brooklyn",
-  "Q": "Queens",
-  "Bx": "Bronx",
-  "SI": "Staten Island"
-};
+
   // --------------------
   // SCALES
   // --------------------
@@ -361,6 +351,7 @@ const boroughFullName = {
     .attr("height", d => barHeight - y(d.nonADA))
     .attr("fill","lightgray");
 
+    //ada mouseover events
 svg.selectAll(".adaBar, .nonAdaBar")
   .on("mouseover", (event, d) => {
     const type = d3.select(event.target).classed("adaBar") ? "ADA" : "Non-ADA";
