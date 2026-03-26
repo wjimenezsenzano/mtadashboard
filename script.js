@@ -375,7 +375,7 @@ svg.selectAll(".adaBar, .nonAdaBar")
   svg.append("g")
     .attr("transform", `translate(0, ${barHeight})`)
     .call(d3.axisBottom(x)
-            .tickFormat(d => boroughFullName[d] || d)) // map short code to full name
+            .tickFormat(d => boroughFullNames[d] || d)) // map short code to full name
     .selectAll("text")
     .attr("transform", "rotate(-30)")
     .style("text-anchor", "end");
